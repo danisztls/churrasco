@@ -6,4 +6,4 @@
  * Empty string: insertCoin() is called without a gameId, which works for
  * local development.
  */
-export const GAME_ID = ''
+export const GAME_ID = 'TAwWkgbL8l5mNSukBUdJ'
