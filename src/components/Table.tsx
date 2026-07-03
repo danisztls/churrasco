@@ -62,7 +62,7 @@ export function Table() {
               {seat.id === me.id ? ' (você)' : ''}
             </span>
             <span className="muted">
-              🍽️{seat.hand.length} 🍺
+              🃏{seat.hand.length} · 🍺
               {seat.hand.filter((c) => c.kind === 'bebida').length}
             </span>
             {seat.tookThisRound && <span title="já pegou nesta rodada">✓</span>}
