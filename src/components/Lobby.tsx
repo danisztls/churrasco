@@ -1,4 +1,5 @@
-import { getRoomCode } from 'playroomkit'
+import { getRoomCode, useMultiplayerState } from 'playroomkit'
+import { BOT_SEATS } from '../game/bot'
 import { CONFIG } from '../game/config'
 import { useGameEngine } from '../multiplayer/useGameEngine'
 
@@ -6,7 +7,8 @@ const MIN_PLAYERS = import.meta.env.DEV ? 2 : CONFIG.minPlayers
 
 export function Lobby() {
   const { players, amHost, startGame } = useGameEngine()
-  const count = players.length
+  const [bots, setBots] = useMultiplayerState('bots', 0)
+  const count = players.length + bots
   const ready = count >= MIN_PLAYERS && count <= CONFIG.maxPlayers
   return (
     <div className="screen lobby">
@@ -25,7 +27,36 @@ export function Lobby() {
             {p.getProfile().name}
           </li>
         ))}
+        {BOT_SEATS.slice(0, bots).map((b) => (
+          <li key={b.id}>
+            <span className="dot" style={{ background: b.color }} />
+            🤖 {b.name}
+          </li>
+        ))}
       </ul>
+      {amHost && (
+        <div className="lobby-bots">
+          <button
+            type="button"
+            className="btn"
+            disabled={bots <= 0}
+            onClick={() => setBots(bots - 1, true)}
+          >
+            −
+          </button>
+          <span>
+            {bots} bot{bots === 1 ? '' : 's'}
+          </span>
+          <button
+            type="button"
+            className="btn"
+            disabled={players.length + bots >= CONFIG.maxPlayers}
+            onClick={() => setBots(bots + 1, true)}
+          >
+            +
+          </button>
+        </div>
+      )}
       {amHost ? (
         <button
           type="button"

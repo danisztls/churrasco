@@ -122,8 +122,31 @@ export interface GameSnapshot {
   sobras: Card[]
   /** Cards removed from play (Tá Pegando Fogo, Não Alimente). */
   discard: Card[]
+  /** Every player decision, for post-game balance analysis (CSV export). */
+  log: LogEntry[]
   /** RNG seed the deck was shuffled with — for reproducing a game. */
   seed: number
+}
+
+export type LogAction =
+  | 'pegou'
+  | 'passou'
+  | 'abacaxi'
+  | 'descartou'
+  | 'presenteou'
+  | 'trocou'
+  | 'sobras'
+
+export interface LogEntry {
+  round: number
+  event: EventId | null
+  /** Seat name (stable for the game, readable in the CSV). */
+  seat: string
+  action: LogAction
+  /** Label of the card acquired/given, when the action involves one. */
+  card?: string
+  /** Face-up options available at the moment of a take/pass decision. */
+  options?: number
 }
 
 export type Move =

@@ -1,3 +1,4 @@
+import { logToCsv } from '../game/log'
 import { scoreGame } from '../game/scoring'
 import { useGameEngine } from '../multiplayer/useGameEngine'
 import { CardView } from './CardView'
@@ -7,6 +8,16 @@ export function ScoreBoard() {
   if (!game) return null
   const scores = [...scoreGame(game.seats)].sort((a, b) => b.total - a.total)
   const top = scores[0]?.total
+
+  const downloadCsv = () => {
+    const blob = new Blob([logToCsv(game)], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `churrasco-log-${game.seed}.csv`
+    a.click()
+    URL.revokeObjectURL(url)
+  }
 
   return (
     <div className="screen scoreboard">
@@ -85,13 +96,18 @@ export function ScoreBoard() {
         ))}
       </div>
 
-      {amHost ? (
-        <button type="button" className="btn btn-primary" onClick={startGame}>
-          Jogar de novo
+      <div className="score-actions">
+        {amHost ? (
+          <button type="button" className="btn btn-primary" onClick={startGame}>
+            Jogar de novo
+          </button>
+        ) : (
+          <p className="muted">O anfitrião pode começar outra partida.</p>
+        )}
+        <button type="button" className="btn" onClick={downloadCsv}>
+          Baixar log (CSV)
         </button>
-      ) : (
-        <p className="muted">O anfitrião pode começar outra partida.</p>
-      )}
+      </div>
     </div>
   )
 }

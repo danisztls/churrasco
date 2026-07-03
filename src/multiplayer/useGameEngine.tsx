@@ -10,6 +10,7 @@ import {
 } from 'playroomkit'
 import type { PlayerState } from 'playroomkit'
 import React, { createContext, useCallback, useContext, useEffect } from 'react'
+import { BOT_SEATS, botMove } from '../game/bot'
 import { applyMove, legalMoves, newGame } from '../game/rules'
 import type { GameSnapshot, Move } from '../game/types'
 
@@ -74,41 +75,44 @@ export function GameEngineProvider({
 
   const startGame = useCallback(() => {
     if (!isHost()) return
-    const seats = players.map((p) => ({
-      id: p.id,
-      name: p.getProfile().name,
-      color: p.getProfile().color?.hexString
-    }))
+    const botCount = (getState('bots') as number) || 0
+    const seats = [
+      ...players.map((p) => ({
+        id: p.id,
+        name: p.getProfile().name,
+        color: p.getProfile().color?.hexString
+      })),
+      ...BOT_SEATS.slice(0, botCount)
+    ]
     setGame(newGame(seats, Date.now() >>> 0), true)
   }, [players, setGame])
 
-  // Host auto-pilot: if the seat on turn belongs to a disconnected player,
-  // play a safe move for them (reveal, then take the first face-up card)
-  // so one dropout doesn't deadlock the table.
+  // Host auto-pilot: bot seats and disconnected players get their moves
+  // played by the greedy bot policy, so nothing ever deadlocks the table.
   useEffect(() => {
     if (!amHost || !game || game.phase !== 'playing') return
-    const stuck = game.seats.some(
+    const unattended = game.seats.filter(
       (seat) =>
         !players.some((p) => p.id === seat.id) &&
         legalMoves(game, seat.id).length > 0
     )
-    if (!stuck) return
-    const timer = setTimeout(() => {
-      const snap = getState('game') as GameSnapshot | null
-      if (!snap || snap.phase !== 'playing') return
-      for (const seat of snap.seats) {
-        if (getParticipants()[seat.id]) continue // (re)connected meanwhile
-        const moves = legalMoves(snap, seat.id)
-        if (moves.length === 0) continue
-        // Safe default: reveal, else take, else the first legal event move.
-        const move =
-          moves.find((m) => m.type === 'reveal') ??
-          moves.find((m) => m.type === 'take') ??
-          moves[0]
-        hostApply(seat.id, move)
-        return // one per tick; the state change re-triggers this effect
-      }
-    }, 1500)
+    if (unattended.length === 0) return
+    const isBot = unattended.some((s) => s.id.startsWith('bot-'))
+    const timer = setTimeout(
+      () => {
+        const snap = getState('game') as GameSnapshot | null
+        if (!snap || snap.phase !== 'playing') return
+        for (const seat of snap.seats) {
+          if (getParticipants()[seat.id]) continue // (re)connected meanwhile
+          const move = botMove(snap, seat.id, Math.random)
+          if (move) {
+            hostApply(seat.id, move)
+            return // one per tick; the state change re-triggers this effect
+          }
+        }
+      },
+      isBot ? 900 : 1500
+    )
     return () => clearTimeout(timer)
   }, [amHost, game, players, hostApply])
 

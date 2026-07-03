@@ -69,7 +69,17 @@ _Não Alimente os Animais_ (todos descartam 1), _Amigo Secreto_ (todos passam
 8. **Abre a Boquinha**: a carta comprada vai ao vizinho seguinte na ordem; a
    ordem de chegada na mão do vizinho conta para o pão-de-alho dele.
 
+## Playtest solo e análise
+
+- **Bots**: o anfitrião adiciona até 5 bots no lobby (política gulosa por
+  delta de pontuação, `src/game/bot.ts`). Também pilotam jogadores que caírem.
+- **Log de decisões**: toda pegada/passada/escolha de evento vai para o
+  snapshot; a tela final tem **Baixar log (CSV)** (rodada, evento, jogador,
+  ação, carta, nº de opções abertas) + totais por categoria — insumo direto
+  para as questões de balanço do design (passar paga? M=N+2 segura 5-6?).
+- **Regras no jogo**: botão «?» flutuante abre o "Como jogar" (gerado do
+  config: pontuações, pratos e eventos sempre em dia com o balanceamento).
+
 ## Roadmap
 
-- **M3**: bots para playtest solo, stream mode (tabuleiro na TV), deploy
-  estático, export de log de compras por rodada para análise de balanço.
+- Stream mode (tabuleiro na TV) e deploy estático (Cloudflare Pages/Netlify).

@@ -1,14 +1,37 @@
 import { CONFIG, DEFAULT_MODIFIERS } from './config'
 import { buildShuffledDeck, mulberry32, shuffle } from './deck'
 import { ALL_EVENTS, EVENTS } from './events'
+import { cardLabel } from './log'
 import type {
+  Card,
   GameSnapshot,
+  LogAction,
   Move,
   PendingSimul,
   PendingSwap,
   PlayerSeat,
   TurnStep
 } from './types'
+
+function logEntry(
+  snap: GameSnapshot,
+  seat: PlayerSeat,
+  action: LogAction,
+  card?: Card,
+  options?: number
+): void {
+  snap.log.push({
+    round: snap.round,
+    event: snap.currentEvent,
+    seat: seat.name,
+    action,
+    card: card ? cardLabel(card) : undefined,
+    options
+  })
+}
+
+const faceUpCount = (snap: GameSnapshot) =>
+  snap.buffet.filter((s) => s.faceUp).length
 
 /**
  * Pure turn machine. applyMove() takes a snapshot + a move and returns a NEW
@@ -51,6 +74,7 @@ export function newGame(
     pending: null,
     sobras: [],
     discard: [],
+    log: [],
     seed
   }
   dealRound(snap)
@@ -225,6 +249,7 @@ export function applyMove(
     case 'pass': {
       if (next.turnStep !== 'act') throw new Error('revele uma carta primeiro')
       if (!passIsLegal(next)) throw new Error('passar não é permitido agora')
+      logEntry(next, seat, 'passou', undefined, faceUpCount(next))
       finishTurn(next)
       return next
     }
@@ -235,6 +260,7 @@ export function applyMove(
       if (!slot || !slot.faceUp) throw new Error('carta inválida para trocar')
       const idx = seat.hand.findIndex((c) => c.kind === 'abacaxi')
       if (idx === -1) throw new Error('você não tem abacaxi')
+      logEntry(next, seat, 'abacaxi', slot.card, faceUpCount(next))
       const [abacaxi] = seat.hand.splice(idx, 1)
       seat.hand.push(slot.card)
       slot.card = abacaxi
@@ -247,6 +273,7 @@ export function applyMove(
 /** Move the buffet card into a hand (own, or neighbor's under Abre a
  * Boquinha), then advance — via the sobras give step when active. */
 function takeSlot(snap: GameSnapshot, seat: PlayerSeat, slotIdx: number): void {
+  logEntry(snap, seat, 'pegou', snap.buffet[slotIdx].card, faceUpCount(snap))
   const [slot] = snap.buffet.splice(slotIdx, 1)
   const receiver = snap.modifiers.takeToNeighbor
     ? snap.seats[(snap.turnSeat + 1) % snap.seats.length]
@@ -294,6 +321,12 @@ function resolveSimul(snap: GameSnapshot, simul: PendingSimul): void {
     given.set(i, card)
   })
   given.forEach((card, i) => {
+    logEntry(
+      snap,
+      snap.seats[i],
+      simul.kind === 'discard' ? 'descartou' : 'presenteou',
+      card
+    )
     if (simul.kind === 'discard') snap.discard.push(card)
     else snap.seats[(i + 1) % n].hand.push(card)
   })
@@ -325,6 +358,7 @@ function applySwap(
   const [theirs] = neighbor.hand.splice(theirIdx, 1)
   neighbor.hand.push(mine)
   me.hand.push(theirs)
+  logEntry(snap, me, 'trocou', mine)
   swap.queue.shift()
   // Skip queued players left without a legal swap.
   while (swap.queue.length > 0) {
@@ -354,6 +388,7 @@ function applySobrasGive(
     throw new Error('carta inválida')
   const [card] = seat.hand.splice(handIdx, 1)
   snap.sobras.push(card)
+  logEntry(snap, seat, 'sobras', card)
   finishTurn(snap)
   return snap
 }
