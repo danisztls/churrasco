@@ -9,7 +9,7 @@ import type { GameSnapshot, Move, TurnStep } from './types'
  */
 
 export function newGame(
-  players: { id: string; name: string }[],
+  players: { id: string; name: string; color?: string }[],
   seed: number
 ): GameSnapshot {
   if (players.length < 2 || players.length > CONFIG.maxPlayers)
@@ -22,6 +22,7 @@ export function newGame(
     seats: players.map((p) => ({
       id: p.id,
       name: p.name,
+      color: p.color,
       hand: [],
       tookThisRound: false
     })),

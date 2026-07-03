@@ -1,0 +1,366 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #1c1917;
+  --panel: #292524;
+  --text: #fafaf9;
+  --muted: #a8a29e;
+  --accent: #ea580c;
+  --carne: #b91c1c;
+  --linguica: #ea580c;
+  --pao: #eab308;
+  --bebida: #0284c7;
+  --acomp: #16a34a;
+  --abacaxi: #ca8a04;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.screen {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1rem 1rem 6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+h1 {
+  font-size: 1.6rem;
+  margin: 0;
+  text-align: center;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.fatal {
+  max-width: 480px;
+  margin: 4rem auto;
+  padding: 1rem;
+  text-align: center;
+}
+
+.fatal a {
+  color: var(--accent);
+}
+
+/* ---- lobby ---- */
+
+.lobby {
+  text-align: center;
+  padding-top: 3rem;
+}
+
+.lobby-players {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lobby-players li {
+  background: var(--panel);
+  border-radius: 0.5rem;
+  padding: 0.6rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  justify-content: center;
+}
+
+.dot {
+  display: inline-block;
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 50%;
+  background: var(--muted);
+  flex: none;
+}
+
+/* ---- table ---- */
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-weight: 600;
+}
+
+.banner {
+  background: var(--panel);
+  border-radius: 0.5rem;
+  padding: 0.7rem 1rem;
+  text-align: center;
+  font-weight: 600;
+}
+
+.banner-mine {
+  background: var(--accent);
+  color: #fff;
+}
+
+.players-strip {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.player-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--panel);
+  border-radius: 2rem;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.85rem;
+  border: 1px solid transparent;
+}
+
+.player-current {
+  border-color: var(--accent);
+}
+
+.player-done {
+  opacity: 0.6;
+}
+
+.player-name {
+  font-weight: 600;
+}
+
+/* ---- cards ---- */
+
+.buffet {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 0.6rem;
+}
+
+.card {
+  appearance: none;
+  border: none;
+  font: inherit;
+  color: #1c1917;
+  background: #fafaf9;
+  border-radius: 0.6rem;
+  border-top: 6px solid var(--muted);
+  padding: 0.5rem 0.4rem;
+  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.2rem;
+  text-align: center;
+}
+
+.card:disabled {
+  opacity: 0.9;
+}
+
+.card-clickable {
+  cursor: pointer;
+  box-shadow: 0 0 0 2px var(--accent);
+}
+
+.card-clickable:active {
+  transform: scale(0.97);
+}
+
+.card-selected {
+  box-shadow:
+    0 0 0 3px #fff,
+    0 0 0 6px var(--accent);
+}
+
+.card-emoji {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.card-name {
+  font-weight: 700;
+  font-size: 0.8rem;
+}
+
+.card-rule {
+  font-size: 0.62rem;
+  color: #57534e;
+  line-height: 1.15;
+}
+
+.card-carne {
+  border-top-color: var(--carne);
+}
+.card-linguica {
+  border-top-color: var(--linguica);
+}
+.card-pao {
+  border-top-color: var(--pao);
+}
+.card-bebida {
+  border-top-color: var(--bebida);
+}
+.card-acomp {
+  border-top-color: var(--acomp);
+}
+.card-abacaxi {
+  border-top-color: var(--abacaxi);
+}
+
+.card-back {
+  background: linear-gradient(145deg, #7c2d12, #431407);
+  color: #fdba74;
+  border-top-color: #7c2d12;
+}
+
+.card-small {
+  min-height: 72px;
+  padding: 0.35rem 0.3rem;
+}
+
+.card-small .card-emoji {
+  font-size: 1.3rem;
+}
+
+.card-small .card-name {
+  font-size: 0.65rem;
+}
+
+/* ---- actions ---- */
+
+.action-bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+  padding: 0.8rem;
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(6px);
+}
+
+.btn {
+  appearance: none;
+  font: inherit;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--panel);
+  border: 1px solid #44403c;
+  border-radius: 0.6rem;
+  padding: 0.7rem 1.2rem;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ---- hand ---- */
+
+.hand {
+  background: var(--panel);
+  border-radius: 0.6rem;
+  padding: 0.7rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.hand-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.hand-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(72px, 1fr));
+  gap: 0.4rem;
+}
+
+/* ---- scoreboard ---- */
+
+.score-table-wrap {
+  overflow-x: auto;
+}
+
+.score-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+.score-table th,
+.score-table td {
+  padding: 0.45rem 0.5rem;
+  text-align: right;
+  border-bottom: 1px solid #44403c;
+}
+
+.score-table .score-name {
+  text-align: left;
+  font-weight: 600;
+}
+
+.score-table .score-total {
+  font-weight: 800;
+}
+
+.score-table .winner {
+  background: color-mix(in srgb, var(--accent) 18%, transparent);
+}
+
+.pratos-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.reveal-hands {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.reveal-hand {
+  background: var(--panel);
+  border-radius: 0.6rem;
+  padding: 0.7rem;
+}

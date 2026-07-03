@@ -31,6 +31,8 @@ export interface BuffetSlot {
 export interface PlayerSeat {
   id: string
   name: string
+  /** Player profile color (hex), for UI accents. */
+  color?: string
   /** Acquisition order matters: pao-de-alho binds to the next corte AFTER it. */
   hand: Card[]
   tookThisRound: boolean
