@@ -38,14 +38,28 @@ export interface PlayerSeat {
   tookThisRound: boolean
 }
 
+export type EventId =
+  | 'fogo'
+  | 'nao-alimente'
+  | 'ultimos-primeiros'
+  | 'brinde'
+  | 'esqueceram'
+  | 'depois-acaba'
+  | 'primo-rico'
+  | 'churrasqueiro'
+  | 'foto-story'
+  | 'amigo-secreto'
+  | 'album-copa'
+  | 'abre-boquinha'
+  | 'sobras'
+
 /**
- * Per-round rule modifiers — the plug-in point for event cards (milestone 2).
- * v1 always uses DEFAULT_MODIFIERS.
+ * Per-round rule modifiers, reset every round and set by the event card.
  */
 export interface RoundModifiers {
   /** Extra buffet cards beyond N + buffetExtra (Primo Rico: +2). */
   buffetDelta: number
-  /** Depois Acaba: false = flip-and-take, passing forbidden. */
+  /** Depois Acaba: false = passing forbidden. */
   passAllowed: boolean
   /** Churrasqueiro Profissa: whole buffet revealed at round start. */
   revealAll: boolean
@@ -53,11 +67,36 @@ export interface RoundModifiers {
   reversed: boolean
   /** Foto pro Story: all hands visible this round. */
   openHands: boolean
+  /** Depois Acaba: revealing a card takes it immediately (flip-and-take). */
+  forcedTake: boolean
+  /** Abre a Boquinha: the card you take goes to the next seat's hand. */
+  takeToNeighbor: boolean
+  /** As Sobras de Ontem: after taking, put 1 card from hand on the pile. */
+  sobrasGive: boolean
+  /** Esqueceram de Mim: this seat only gets its turn after everyone else took. */
+  lastSeat: number | null
 }
 
 export type GamePhase = 'playing' | 'scored'
 
-export type TurnStep = 'reveal' | 'act'
+export type TurnStep = 'reveal' | 'act' | 'give'
+
+/** Simultaneous pick-from-hand phase (Não Alimente / Amigo Secreto). */
+export interface PendingSimul {
+  kind: 'discard' | 'gift'
+  /** Seat ids that still need to choose. */
+  waitingFor: string[]
+  /** Chosen hand index per seat id; resolved when waitingFor empties. */
+  choices: Record<string, number>
+}
+
+/** Sequential neighbor-swap phase (Álbum da Copa); head of queue acts. */
+export interface PendingSwap {
+  kind: 'swap'
+  queue: string[]
+}
+
+export type Pending = PendingSimul | PendingSwap
 
 export interface GameSnapshot {
   phase: GamePhase
@@ -73,6 +112,16 @@ export interface GameSnapshot {
   /** Remaining draw pile. */
   deck: Card[]
   modifiers: RoundModifiers
+  /** Shuffled event deck; one drawn per round from round 2, no repeats. */
+  eventDeck: EventId[]
+  /** Event in effect this round (null in round 1 or if deck exhausted). */
+  currentEvent: EventId | null
+  /** Blocking event phase before normal turns start (or null). */
+  pending: Pending | null
+  /** As Sobras de Ontem: cards contributed this round; seeds next round. */
+  sobras: Card[]
+  /** Cards removed from play (Tá Pegando Fogo, Não Alimente). */
+  discard: Card[]
   /** RNG seed the deck was shuffled with — for reproducing a game. */
   seed: number
 }
@@ -83,6 +132,14 @@ export type Move =
   | { type: 'pass' }
   /** Swap an abacaxi from hand with the face-up card at `slot`, then pass. */
   | { type: 'abacaxi'; slot: number }
+  /** Não Alimente os Animais: choose a hand card to discard. */
+  | { type: 'event-discard'; handIdx: number }
+  /** Amigo Secreto: choose a hand card to gift to the next seat. */
+  | { type: 'event-gift'; handIdx: number }
+  /** Álbum da Copa: give a chosen card to a neighbor, get a random one back. */
+  | { type: 'event-swap'; handIdx: number; dir: 'left' | 'right' }
+  /** As Sobras de Ontem: after taking, choose a hand card for the pile. */
+  | { type: 'event-give'; handIdx: number }
 
 export interface HandScore {
   carne: number

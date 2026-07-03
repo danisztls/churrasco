@@ -87,25 +87,32 @@ export function GameEngineProvider({
   // so one dropout doesn't deadlock the table.
   useEffect(() => {
     if (!amHost || !game || game.phase !== 'playing') return
-    const seatId = game.seats[game.turnSeat].id
-    if (players.some((p) => p.id === seatId)) return
+    const stuck = game.seats.some(
+      (seat) =>
+        !players.some((p) => p.id === seat.id) &&
+        legalMoves(game, seat.id).length > 0
+    )
+    if (!stuck) return
     const timer = setTimeout(() => {
       const snap = getState('game') as GameSnapshot | null
       if (!snap || snap.phase !== 'playing') return
-      const turnId = snap.seats[snap.turnSeat].id
-      if (getParticipants()[turnId]) return // reconnected meanwhile
-      const moves = legalMoves(snap)
-      const move =
-        moves.find((m) => m.type === 'reveal') ??
-        moves.find((m) => m.type === 'take')
-      if (move) hostApply(turnId, move)
+      for (const seat of snap.seats) {
+        if (getParticipants()[seat.id]) continue // (re)connected meanwhile
+        const moves = legalMoves(snap, seat.id)
+        if (moves.length === 0) continue
+        // Safe default: reveal, else take, else the first legal event move.
+        const move =
+          moves.find((m) => m.type === 'reveal') ??
+          moves.find((m) => m.type === 'take') ??
+          moves[0]
+        hostApply(seat.id, move)
+        return // one per tick; the state change re-triggers this effect
+      }
     }, 1500)
     return () => clearTimeout(timer)
   }, [amHost, game, players, hostApply])
 
-  const myTurn =
-    game?.phase === 'playing' && game.seats[game.turnSeat]?.id === me.id
-  const myMoves = myTurn && game ? legalMoves(game) : []
+  const myMoves = game ? legalMoves(game, me.id) : []
 
   return (
     <GameEngineContext.Provider

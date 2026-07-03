@@ -19,6 +19,8 @@ export const CONFIG = {
    * pressure ends the round; online this guarantees termination.
    */
   antiStallPass: true,
+  /** Event cards from round 2 on (one per round, no repeats per game). */
+  eventsEnabled: true,
 
   /** Face value per corte (pirâmide invertida: raro = alto). */
   cortePoints: {
@@ -134,5 +136,9 @@ export const DEFAULT_MODIFIERS: RoundModifiers = {
   passAllowed: true,
   revealAll: false,
   reversed: false,
-  openHands: false
+  openHands: false,
+  forcedTake: false,
+  takeToNeighbor: false,
+  sobrasGive: false,
+  lastSeat: null
 }

@@ -114,6 +114,22 @@ h1 {
   font-size: 1.1rem;
 }
 
+.event-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: linear-gradient(145deg, #451a03, #292524);
+  border: 1px solid #92400e;
+  border-radius: 0.6rem;
+  padding: 0.8rem 1rem;
+  line-height: 1.35;
+}
+
+.event-emoji {
+  font-size: 2.2rem;
+  flex: none;
+}
+
 .banner-mine {
   background: var(--accent);
   color: #fff;
