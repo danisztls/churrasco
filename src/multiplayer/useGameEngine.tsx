@@ -102,8 +102,14 @@ export function GameEngineProvider({
       () => {
         const snap = getState('game') as GameSnapshot | null
         if (!snap || snap.phase !== 'playing') return
+        // Never auto-play a connected human — the local player explicitly,
+        // since getParticipants() may not include self.
+        const connected = new Set([
+          myPlayer().id,
+          ...Object.keys(getParticipants())
+        ])
         for (const seat of snap.seats) {
-          if (getParticipants()[seat.id]) continue // (re)connected meanwhile
+          if (connected.has(seat.id)) continue
           const move = botMove(snap, seat.id, Math.random)
           if (move) {
             hostApply(seat.id, move)

@@ -35,6 +35,16 @@ const ACOMP_META: Record<Acomp, { emoji: string; name: string }> = {
   salada: { emoji: '🥗', name: 'Salada' }
 }
 
+/** Category (CSS suffix) for a plain log label (see game/log.ts cardLabel). */
+export function labelKind(label: string): string {
+  if (label in CORTE_META) return 'carne'
+  if (label in BEBIDA_META) return 'bebida'
+  if (label in ACOMP_META) return 'acomp'
+  if (label === 'pao-de-alho') return 'pao'
+  if (label === 'abacaxi') return 'abacaxi'
+  return 'linguica'
+}
+
 /** Display name for a plain log label (see game/log.ts cardLabel). */
 export function labelName(label: string): string {
   const all: Record<string, string> = {

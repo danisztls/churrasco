@@ -71,10 +71,17 @@ describe('turn flow', () => {
   it('rejects moves from a player out of turn', () => {
     const snap = newGame(PLAYERS, 42, NO_EVENTS)
     const notCurrent = snap.seats.find((_, i) => i !== snap.turnSeat)!.id
-    expect(() =>
-      applyMove(snap, notCurrent, { type: 'reveal', slot: 2 })
-    ).toThrow()
+    expect(() => applyMove(snap, notCurrent, { type: 'reveal' })).toThrow()
     expect(legalMoves(snap, notCurrent)).toHaveLength(0)
+  })
+
+  it('reveal flips the first face-down card (no choice)', () => {
+    const snap = newGame(PLAYERS, 42, NO_EVENTS)
+    const reveals = legalMoves(snap, currentId(snap))
+    expect(reveals).toEqual([{ type: 'reveal' }])
+    const firstDown = snap.buffet.findIndex((s) => !s.faceUp)
+    const next = applyMove(snap, currentId(snap), { type: 'reveal' })
+    expect(next.buffet[firstDown].faceUp).toBe(true)
   })
 
   it('pass requeues the player; round ends when everyone took', () => {

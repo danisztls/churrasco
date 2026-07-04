@@ -184,9 +184,7 @@ export function legalMoves(snap: GameSnapshot, playerId: string): Move[] {
     return moves
   }
   if (snap.turnStep === 'reveal') {
-    snap.buffet.forEach((s, i) => {
-      if (!s.faceUp) moves.push({ type: 'reveal', slot: i })
-    })
+    if (snap.buffet.some((s) => !s.faceUp)) moves.push({ type: 'reveal' })
     return moves
   }
   snap.buffet.forEach((s, i) => {
@@ -228,12 +226,12 @@ export function applyMove(
   switch (move.type) {
     case 'reveal': {
       if (next.turnStep !== 'reveal') throw new Error('nada a revelar agora')
-      const slot = next.buffet[move.slot]
-      if (!slot || slot.faceUp) throw new Error('carta inválida para revelar')
-      slot.faceUp = true
+      const slotIdx = next.buffet.findIndex((s) => !s.faceUp)
+      if (slotIdx === -1) throw new Error('nada para revelar')
+      next.buffet[slotIdx].faceUp = true
       if (next.modifiers.forcedTake) {
         // Depois Acaba: what you flip is yours.
-        takeSlot(next, seat, move.slot)
+        takeSlot(next, seat, slotIdx)
         return next
       }
       next.turnStep = 'act'

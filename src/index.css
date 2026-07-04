@@ -136,6 +136,38 @@ h1 {
   margin-right: 0.15rem;
 }
 
+.log-card {
+  font-weight: 700;
+}
+
+.log-carne {
+  color: #f87171;
+}
+.log-linguica {
+  color: #fb923c;
+}
+.log-pao {
+  color: #fde047;
+}
+.log-bebida {
+  color: #38bdf8;
+}
+.log-acomp {
+  color: #4ade80;
+}
+.log-abacaxi {
+  color: #facc15;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
 @media (min-width: 1100px) {
   .screen.table {
     max-width: 1180px;
@@ -199,6 +231,9 @@ h1 {
   text-align: center;
   font-weight: 600;
   font-size: 1.1rem;
+  transition:
+    background 0.4s ease,
+    color 0.4s ease;
 }
 
 .event-banner {
@@ -240,6 +275,10 @@ h1 {
   padding: 0.5rem 1rem;
   font-size: 1rem;
   border: 2px solid transparent;
+  transition:
+    border-color 0.35s ease,
+    background 0.35s ease,
+    opacity 0.35s ease;
 }
 
 .player-current {
@@ -279,6 +318,18 @@ h1 {
   justify-content: center;
   gap: 0.4rem;
   text-align: center;
+  transition:
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease,
+    opacity 0.3s ease;
+  animation: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.9);
+  }
 }
 
 .card:disabled {
@@ -288,9 +339,6 @@ h1 {
 .card-clickable {
   cursor: pointer;
   box-shadow: 0 0 0 2px var(--accent);
-  transition:
-    transform 0.12s ease,
-    box-shadow 0.12s ease;
 }
 
 .card-clickable:hover,
@@ -304,6 +352,23 @@ h1 {
 
 .card-clickable:active {
   transform: translateY(-2px) scale(0.98);
+}
+
+/* The next card to be flipped invites the tap. */
+.card-back.card-clickable {
+  animation:
+    card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1),
+    pulse 1.8s ease-in-out 0.6s infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 2px var(--accent);
+  }
+  50% {
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 45%, transparent);
+  }
 }
 
 .card-selected {
@@ -398,6 +463,15 @@ h1 {
   border-radius: 0.7rem;
   padding: 0.9rem 1.5rem;
   cursor: pointer;
+  transition:
+    background 0.25s ease,
+    border-color 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.2s ease;
+}
+
+.btn:not(:disabled):hover {
+  transform: translateY(-2px);
 }
 
 .btn:disabled {

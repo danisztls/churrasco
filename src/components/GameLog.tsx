@@ -1,31 +1,61 @@
 import { EVENTS } from '../game/events'
 import type { GameSnapshot, LogEntry } from '../game/types'
-import { labelName } from './cardMeta'
+import { labelKind, labelName } from './cardMeta'
 
-function lineFor(e: LogEntry): string {
-  const card = e.card ? labelName(e.card) : ''
+function LogLine({ e, color }: { e: LogEntry; color?: string }) {
+  const seat = <strong style={color ? { color } : undefined}>{e.seat}</strong>
+  const card = e.card ? (
+    <span className={`log-card log-${labelKind(e.card)}`}>
+      {labelName(e.card)}
+    </span>
+  ) : null
   switch (e.action) {
     case 'pegou':
-      return `${e.seat} pegou ${card}`
+      return (
+        <>
+          {seat} pegou {card}
+        </>
+      )
     case 'passou':
-      return `${e.seat} passou`
+      return <>{seat} passou</>
     case 'abacaxi':
-      return `${e.seat} trocou o abacaxi por ${card}`
+      return (
+        <>
+          {seat} trocou o abacaxi por {card}
+        </>
+      )
     case 'descartou':
-      return `${e.seat} descartou ${card}`
+      return (
+        <>
+          {seat} descartou {card}
+        </>
+      )
     case 'presenteou':
-      return `${e.seat} deu ${card} de presente`
+      return (
+        <>
+          {seat} deu {card} de presente
+        </>
+      )
     case 'trocou':
-      return `${e.seat} deu ${card} na troca`
+      return (
+        <>
+          {seat} deu {card} na troca
+        </>
+      )
     case 'sobras':
-      return `${e.seat} pôs ${card} no monte`
+      return (
+        <>
+          {seat} pôs {card} no monte
+        </>
+      )
     case 'queimou':
-      return `o buffet pegou fogo (${e.options} cartas queimadas)`
+      return <>o buffet pegou fogo ({e.options} cartas queimadas)</>
   }
 }
 
 export function GameLog({ game }: { game: GameSnapshot }) {
   if (game.log.length === 0) return null
+  const colorOf = new Map(game.seats.map((s) => [s.name, s.color]))
   return (
     <aside className="game-log">
       <div className="hand-header">
@@ -38,7 +68,7 @@ export function GameLog({ game }: { game: GameSnapshot }) {
               R{e.round}
               {e.event ? EVENTS[e.event].emoji : ''}
             </span>{' '}
-            {lineFor(e)}
+            <LogLine e={e} color={colorOf.get(e.seat)} />
           </li>
         ))}
       </ul>

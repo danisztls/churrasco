@@ -37,9 +37,8 @@ export function Table() {
   const mySeat = myIdx >= 0 ? game.seats[myIdx] : undefined
   const ev = game.currentEvent ? EVENTS[game.currentEvent] : null
 
-  const revealSlots = new Set(
-    myMoves.filter((m) => m.type === 'reveal').map((m) => m.slot)
-  )
+  const canReveal = myMoves.some((m) => m.type === 'reveal')
+  const nextRevealIdx = game.buffet.findIndex((s) => !s.faceUp)
   const takeSlots = new Set(
     myMoves.filter((m) => m.type === 'take').map((m) => m.slot)
   )
@@ -91,8 +90,8 @@ export function Table() {
     banner = 'Escolha 1 carta da mão para o monte das sobras.'
   } else if (myTurn && game.turnStep === 'reveal') {
     banner = game.modifiers.forcedTake
-      ? 'Vire uma carta — ela é sua!'
-      : 'Sua vez! Toque numa carta virada para revelar.'
+      ? 'Vire a próxima carta — ela é sua!'
+      : 'Sua vez! Vire a próxima carta.'
   } else if (myTurn) {
     banner = 'Pegue uma carta do buffet — ou passe.'
   } else {
@@ -189,10 +188,10 @@ export function Table() {
             ) : (
               <CardBack
                 key={slot.card.id}
-                clickable={revealSlots.has(i)}
+                clickable={canReveal && i === nextRevealIdx}
                 onClick={
-                  revealSlots.has(i)
-                    ? () => dispatch({ type: 'reveal', slot: i })
+                  canReveal && i === nextRevealIdx
+                    ? () => dispatch({ type: 'reveal' })
                     : undefined
                 }
               />

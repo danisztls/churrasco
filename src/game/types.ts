@@ -152,7 +152,8 @@ export interface LogEntry {
 }
 
 export type Move =
-  | { type: 'reveal'; slot: number }
+  /** Flip the next face-down buffet card (fixed order — no choice). */
+  | { type: 'reveal' }
   | { type: 'take'; slot: number }
   | { type: 'pass' }
   /** Swap an abacaxi from hand with the face-up card at `slot`, then pass. */
