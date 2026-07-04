@@ -30,6 +30,13 @@ export const EVENTS: Record<EventId, EventSpec> = {
     emoji: '🔥',
     desc: 'O buffet inteiro queimou. Ninguém pega nada nesta rodada.',
     postDeal: (snap) => {
+      snap.log.push({
+        round: snap.round,
+        event: 'fogo',
+        seat: 'mesa',
+        action: 'queimou',
+        options: snap.buffet.length
+      })
       snap.discard.push(...snap.buffet.map((s) => s.card))
       snap.buffet = []
       return 'round-lost'

@@ -97,6 +97,92 @@ h1 {
 
 /* ---- table ---- */
 
+.table {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.2rem;
+  align-items: start;
+}
+
+.table-main {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  min-width: 0;
+}
+
+.game-log {
+  background: var(--panel);
+  border-radius: 0.6rem;
+  padding: 0.8rem;
+  max-height: 40vh;
+  overflow-y: auto;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.game-log ul {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.log-round {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-right: 0.15rem;
+}
+
+@media (min-width: 1100px) {
+  .screen.table {
+    max-width: 1180px;
+    grid-template-columns: minmax(0, 1fr) 320px;
+  }
+
+  .game-log {
+    position: sticky;
+    top: 1rem;
+    max-height: calc(100vh - 2rem);
+  }
+}
+
+/* ---- live score strip ---- */
+
+.score-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--panel);
+  border-radius: 0.6rem;
+  padding: 0.6rem 0.8rem;
+}
+
+.score-chip {
+  background: var(--bg);
+  border: 1px solid #44403c;
+  border-radius: 2rem;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.score-zero {
+  opacity: 0.4;
+}
+
+.score-total {
+  margin-left: auto;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 800;
+}
+
 .table-header {
   display: flex;
   justify-content: space-between;
@@ -202,10 +288,22 @@ h1 {
 .card-clickable {
   cursor: pointer;
   box-shadow: 0 0 0 2px var(--accent);
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.card-clickable:hover,
+.card-clickable:focus-visible {
+  transform: translateY(-6px) scale(1.05);
+  box-shadow:
+    0 0 0 3px var(--accent),
+    0 12px 20px rgba(0, 0, 0, 0.5);
+  z-index: 1;
 }
 
 .card-clickable:active {
-  transform: scale(0.97);
+  transform: translateY(-2px) scale(0.98);
 }
 
 .card-selected {

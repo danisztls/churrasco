@@ -136,6 +136,8 @@ export type LogAction =
   | 'presenteou'
   | 'trocou'
   | 'sobras'
+  /** Tá Pegando Fogo: the whole buffet burned (seat = 'mesa'). */
+  | 'queimou'
 
 export interface LogEntry {
   round: number

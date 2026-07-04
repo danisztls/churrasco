@@ -33,7 +33,7 @@ export function ScoreBoard() {
               <th>🥗 Acomp.</th>
               <th>🍺 Bebida</th>
               <th>🏅 Coloc.</th>
-              <th>🍽️ Pratos</th>
+              <th>⭐ Pratos</th>
               <th>Total</th>
             </tr>
           </thead>

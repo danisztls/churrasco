@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { EVENTS } from '../game/events'
-import { scoreHand } from '../game/scoring'
+import { bebidaPlacements, scoreHand } from '../game/scoring'
 import type { Card, GameSnapshot } from '../game/types'
 import { useGameEngine } from '../multiplayer/useGameEngine'
 import { CardBack, CardView } from './CardView'
 import { cardMeta } from './cardMeta'
+import { GameLog } from './GameLog'
 
 function pendingActors(game: GameSnapshot): string[] {
   if (!game.pending) return []
@@ -117,186 +118,277 @@ export function Table() {
 
   return (
     <div className="screen table">
-      <header className="table-header">
-        <span>Rodada {game.round}</span>
-        <span className="muted">monte: {game.deck.length}</span>
-      </header>
+      <div className="table-main">
+        <header className="table-header">
+          <span>Rodada {game.round}</span>
+          <span className="muted">monte: {game.deck.length}</span>
+        </header>
 
-      {ev && (
-        <div className="event-banner">
-          <span className="event-emoji">{ev.emoji}</span>
-          <span>
-            <strong>{ev.name}</strong>
-            <br />
-            <span className="muted">{ev.desc}</span>
-          </span>
-        </div>
-      )}
-
-      <div
-        className={`banner ${myTurn || handMoves.length > 0 ? 'banner-mine' : ''}`}
-      >
-        {banner}
-      </div>
-
-      <ul className="players-strip">
-        {game.seats.map((seat, i) => (
-          <li
-            key={seat.id}
-            className={[
-              'player-chip',
-              !game.pending && i === game.turnSeat && 'player-current',
-              game.pending &&
-                pendingActors(game).includes(seat.id) &&
-                'player-current',
-              seat.tookThisRound && 'player-done'
-            ]
-              .filter(Boolean)
-              .join(' ')}
-          >
-            <span className="dot" style={{ background: seat.color }} />
-            <span className="player-name">
-              {seat.name}
-              {seat.id === me.id ? ' (você)' : ''}
+        {ev && (
+          <div className="event-banner">
+            <span className="event-emoji">{ev.emoji}</span>
+            <span>
+              <strong>{ev.name}</strong>
+              <br />
+              <span className="muted">{ev.desc}</span>
             </span>
-            <span className="muted">
-              🃏{seat.hand.length} · 🍺
-              {seat.hand.filter((c) => c.kind === 'bebida').length}
-            </span>
-            {seat.tookThisRound && <span title="já pegou nesta rodada">✓</span>}
-          </li>
-        ))}
-      </ul>
-
-      <div className="buffet">
-        {game.buffet.map((slot, i) =>
-          slot.faceUp ? (
-            <CardView
-              key={slot.card.id}
-              card={slot.card}
-              selected={selectedSlot === i}
-              clickable={takeSlots.has(i)}
-              onClick={
-                takeSlots.has(i)
-                  ? () => setSelectedSlot(selectedSlot === i ? null : i)
-                  : undefined
-              }
-            />
-          ) : (
-            <CardBack
-              key={slot.card.id}
-              clickable={revealSlots.has(i)}
-              onClick={
-                revealSlots.has(i)
-                  ? () => dispatch({ type: 'reveal', slot: i })
-                  : undefined
-              }
-            />
-          )
+          </div>
         )}
-      </div>
 
-      {(inActStep || (selectedHand !== null && handAction)) && (
-        <div className="action-bar">
-          {inActStep &&
-            selectedSlot !== null &&
-            takeSlots.has(selectedSlot) && (
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() => dispatch({ type: 'take', slot: selectedSlot })}
-              >
-                Pegar {cardMeta(game.buffet[selectedSlot].card).name}
-              </button>
-            )}
-          {inActStep &&
-            selectedSlot !== null &&
-            abacaxiSlots.has(selectedSlot) && (
+        <div
+          className={`banner ${myTurn || handMoves.length > 0 ? 'banner-mine' : ''}`}
+        >
+          {banner}
+        </div>
+
+        <ul className="players-strip">
+          {game.seats.map((seat, i) => (
+            <li
+              key={seat.id}
+              className={[
+                'player-chip',
+                !game.pending && i === game.turnSeat && 'player-current',
+                game.pending &&
+                  pendingActors(game).includes(seat.id) &&
+                  'player-current',
+                seat.tookThisRound && 'player-done'
+              ]
+                .filter(Boolean)
+                .join(' ')}
+            >
+              <span className="dot" style={{ background: seat.color }} />
+              <span className="player-name">
+                {seat.name}
+                {seat.id === me.id ? ' (você)' : ''}
+              </span>
+              <span className="muted">
+                🃏{seat.hand.length} · 🍺
+                {seat.hand.filter((c) => c.kind === 'bebida').length}
+              </span>
+              {seat.tookThisRound && (
+                <span title="já pegou nesta rodada">✓</span>
+              )}
+            </li>
+          ))}
+        </ul>
+
+        <div className="buffet">
+          {game.buffet.map((slot, i) =>
+            slot.faceUp ? (
+              <CardView
+                key={slot.card.id}
+                card={slot.card}
+                selected={selectedSlot === i}
+                clickable={takeSlots.has(i)}
+                onClick={
+                  takeSlots.has(i)
+                    ? () => setSelectedSlot(selectedSlot === i ? null : i)
+                    : undefined
+                }
+              />
+            ) : (
+              <CardBack
+                key={slot.card.id}
+                clickable={revealSlots.has(i)}
+                onClick={
+                  revealSlots.has(i)
+                    ? () => dispatch({ type: 'reveal', slot: i })
+                    : undefined
+                }
+              />
+            )
+          )}
+        </div>
+
+        {(inActStep || (selectedHand !== null && handAction)) && (
+          <div className="action-bar">
+            {inActStep &&
+              selectedSlot !== null &&
+              takeSlots.has(selectedSlot) && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() => dispatch({ type: 'take', slot: selectedSlot })}
+                >
+                  Pegar {cardMeta(game.buffet[selectedSlot].card).name}
+                </button>
+              )}
+            {inActStep &&
+              selectedSlot !== null &&
+              abacaxiSlots.has(selectedSlot) && (
+                <button
+                  type="button"
+                  className="btn"
+                  onClick={() =>
+                    dispatch({ type: 'abacaxi', slot: selectedSlot })
+                  }
+                >
+                  Trocar pelo 🍍
+                </button>
+              )}
+            {inActStep && (
               <button
                 type="button"
                 className="btn"
-                onClick={() =>
-                  dispatch({ type: 'abacaxi', slot: selectedSlot })
+                disabled={!canPass}
+                title={
+                  canPass
+                    ? 'Deixa para depois — a vez volta'
+                    : 'Sem cartas viradas para baixo: tem que pegar'
                 }
+                onClick={() => dispatch({ type: 'pass' })}
               >
-                Trocar pelo 🍍
+                Passar
               </button>
             )}
-          {inActStep && (
-            <button
-              type="button"
-              className="btn"
-              disabled={!canPass}
-              title={
-                canPass
-                  ? 'Deixa para depois — a vez volta'
-                  : 'Sem cartas viradas para baixo: tem que pegar'
-              }
-              onClick={() => dispatch({ type: 'pass' })}
-            >
-              Passar
-            </button>
-          )}
-          {selectedHand !== null &&
-            swapDirs.map((dir) => (
-              <button
-                key={dir}
-                type="button"
-                className="btn btn-primary"
-                onClick={() =>
-                  dispatch({ type: 'event-swap', handIdx: selectedHand, dir })
-                }
-              >
-                Trocar com {dir === 'left' ? leftSeat.name : rightSeat.name}
-              </button>
-            ))}
-          {selectedHand !== null &&
-            handAction &&
-            handAction !== 'event-swap' &&
-            mySeat &&
-            handConfirmLabel(mySeat.hand[selectedHand]) && (
-              <button
-                type="button"
-                className="btn btn-primary"
-                onClick={() =>
-                  dispatch({
-                    type: handAction as
-                      'event-discard' | 'event-gift' | 'event-give',
-                    handIdx: selectedHand
-                  })
-                }
-              >
-                {handConfirmLabel(mySeat.hand[selectedHand])}
-              </button>
-            )}
-        </div>
-      )}
+            {selectedHand !== null &&
+              swapDirs.map((dir) => (
+                <button
+                  key={dir}
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() =>
+                    dispatch({ type: 'event-swap', handIdx: selectedHand, dir })
+                  }
+                >
+                  Trocar com {dir === 'left' ? leftSeat.name : rightSeat.name}
+                </button>
+              ))}
+            {selectedHand !== null &&
+              handAction &&
+              handAction !== 'event-swap' &&
+              mySeat &&
+              handConfirmLabel(mySeat.hand[selectedHand]) && (
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={() =>
+                    dispatch({
+                      type: handAction as
+                        'event-discard' | 'event-gift' | 'event-give',
+                      handIdx: selectedHand
+                    })
+                  }
+                >
+                  {handConfirmLabel(mySeat.hand[selectedHand])}
+                </button>
+              )}
+          </div>
+        )}
 
-      {mySeat ? (
-        <Hand
-          cards={mySeat.hand}
-          title={`Sua mão (${mySeat.hand.length}/7)`}
-          subtitle={`parcial: ${scoreHand(mySeat.hand).subtotal} pts`}
-          clickableIdxs={handIdxs}
-          selectedIdx={selectedHand}
-          onCardClick={(i) => {
-            if (!handIdxs.has(i)) return
-            setSelectedHand(selectedHand === i ? null : i)
-          }}
-        />
-      ) : (
-        <p className="muted">Você entrou no meio do jogo — assistindo.</p>
-      )}
+        {mySeat ? (
+          <>
+            <Hand
+              cards={mySeat.hand}
+              title={`Sua mão (${mySeat.hand.length}/7)`}
+              clickableIdxs={handIdxs}
+              selectedIdx={selectedHand}
+              onCardClick={(i) => {
+                if (!handIdxs.has(i)) return
+                setSelectedHand(selectedHand === i ? null : i)
+              }}
+            />
+            <ScoreStrip game={game} myIdx={myIdx} />
+          </>
+        ) : (
+          <p className="muted">Você entrou no meio do jogo — assistindo.</p>
+        )}
 
-      {game.modifiers.openHands && (
-        <div className="reveal-hands">
-          {game.seats
-            .filter((s) => s.id !== me.id)
-            .map((seat) => (
-              <Hand key={seat.id} cards={seat.hand} title={`📸 ${seat.name}`} />
-            ))}
-        </div>
-      )}
+        {game.modifiers.openHands && (
+          <div className="reveal-hands">
+            {game.seats
+              .filter((s) => s.id !== me.id)
+              .map((seat) => (
+                <Hand
+                  key={seat.id}
+                  cards={seat.hand}
+                  title={`📸 ${seat.name}`}
+                />
+              ))}
+          </div>
+        )}
+      </div>
+      <GameLog game={game} />
+    </div>
+  )
+}
+
+/** Live score breakdown: category chips + projected bebida placement. */
+function ScoreStrip({ game, myIdx }: { game: GameSnapshot; myIdx: number }) {
+  const seat = game.seats[myIdx]
+  const s = scoreHand(seat.hand)
+  const counts = game.seats.map(
+    (x) => x.hand.filter((c) => c.kind === 'bebida').length
+  )
+  const placement = bebidaPlacements(counts)[myIdx]
+  const total = s.subtotal + placement
+  const sign = (v: number) => (v > 0 ? `+${v}` : `${v}`)
+  const chips: {
+    emoji: string
+    value: string
+    zero: boolean
+    title: string
+  }[] = [
+    {
+      emoji: '🥩',
+      value: `${s.carne}`,
+      zero: s.carne === 0,
+      title: 'carnes (valor de face)'
+    },
+    {
+      emoji: '🧄',
+      value: sign(s.pao),
+      zero: s.pao === 0,
+      title: 'pão de alho (dobras ativas)'
+    },
+    {
+      emoji: '🌭',
+      value: `${s.linguica}`,
+      zero: s.linguica === 0,
+      title: 'linguiças'
+    },
+    {
+      emoji: '🥗',
+      value: `${s.acomp}`,
+      zero: s.acomp === 0,
+      title: 'acompanhamentos distintos'
+    },
+    {
+      emoji: '🍺',
+      value: `${s.bebidaFace}`,
+      zero: s.bebidaFace === 0,
+      title: 'bebidas (valor de face)'
+    },
+    {
+      emoji: '⭐',
+      value: sign(s.pratosTotal),
+      zero: s.pratosTotal === 0,
+      title: 'pratos completos'
+    },
+    {
+      emoji: '🏅',
+      value: sign(placement),
+      zero: placement === 0,
+      title: 'colocação da bebida se o jogo acabasse agora'
+    }
+  ]
+  return (
+    <div className="score-strip">
+      {chips.map((c) => (
+        <span
+          key={c.title}
+          className={`score-chip${c.zero ? ' score-zero' : ''}`}
+          title={c.title}
+        >
+          {c.emoji} {c.value}
+        </span>
+      ))}
+      <span
+        className="score-chip score-total"
+        title="total se o jogo acabasse agora"
+      >
+        ≈ {total} pts
+      </span>
     </div>
   )
 }

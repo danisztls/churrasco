@@ -35,6 +35,25 @@ const ACOMP_META: Record<Acomp, { emoji: string; name: string }> = {
   salada: { emoji: '🥗', name: 'Salada' }
 }
 
+/** Display name for a plain log label (see game/log.ts cardLabel). */
+export function labelName(label: string): string {
+  const all: Record<string, string> = {
+    ...Object.fromEntries(
+      Object.entries(CORTE_META).map(([k, v]) => [k, v.name])
+    ),
+    ...Object.fromEntries(
+      Object.entries(BEBIDA_META).map(([k, v]) => [k, v.name])
+    ),
+    ...Object.fromEntries(
+      Object.entries(ACOMP_META).map(([k, v]) => [k, v.name])
+    ),
+    linguica: 'Linguiça',
+    'pao-de-alho': 'Pão de Alho',
+    abacaxi: 'Abacaxi'
+  }
+  return all[label] ?? label
+}
+
 export function cardMeta(card: Card): CardMeta {
   switch (card.kind) {
     case 'carne':
