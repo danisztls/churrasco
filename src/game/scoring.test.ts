@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest'
 import type { Acomp, Bebida, Card, Corte } from './types'
-import { bebidaPlacements, scoreGame, scoreHand } from './scoring'
+import {
+  bebidaPlacements,
+  cardContributions,
+  scoreGame,
+  scoreHand
+} from './scoring'
 
 let nextId = 0
 const carne = (corte: Corte): Card => ({ id: nextId++, kind: 'carne', corte })
@@ -184,5 +189,36 @@ describe('bebida placement edge cases', () => {
 describe('abacaxi', () => {
   it('is worth 0', () => {
     expect(scoreHand([abacaxi(), abacaxi()]).subtotal).toBe(0)
+  })
+})
+
+describe('cardContributions', () => {
+  it('credits the doubling to the pão and sums to subtotal - pratos', () => {
+    const hand = [
+      pao(),
+      carne('picanha'),
+      carne('costela'),
+      carne('fraldinha'),
+      carne('coracao'),
+      carne('coxao-duro'),
+      linguica()
+    ]
+    const pts = cardContributions(hand)
+    expect(pts).toEqual([5, 5, 4, 3, 2, 1, 1])
+    const s = scoreHand(hand)
+    expect(pts.reduce((a, b) => a + b, 0)).toBe(s.subtotal - s.pratosTotal)
+  })
+
+  it('uses curve increments for linguiça and distinct acomps', () => {
+    const hand = [
+      linguica(),
+      linguica(),
+      linguica(),
+      acomp('arroz'),
+      acomp('arroz'),
+      acomp('farofa'),
+      abacaxi()
+    ]
+    expect(cardContributions(hand)).toEqual([1, 2, 3, 1, 0, 2, 0])
   })
 })

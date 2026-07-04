@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { EVENTS } from '../game/events'
-import { bebidaPlacements, scoreHand } from '../game/scoring'
+import { bebidaPlacements, cardContributions, scoreHand } from '../game/scoring'
 import type { Card, GameSnapshot } from '../game/types'
 import { useGameEngine } from '../multiplayer/useGameEngine'
 import { CardBack, CardView } from './CardView'
@@ -407,6 +407,7 @@ function Hand({
   selectedIdx?: number | null
   onCardClick?: (i: number) => void
 }) {
+  const points = cardContributions(cards)
   return (
     <div className="hand">
       <div className="hand-header">
@@ -419,6 +420,7 @@ function Hand({
             key={card.id}
             card={card}
             small
+            points={points[i]}
             selected={selectedIdx === i}
             clickable={clickableIdxs?.has(i)}
             onClick={

@@ -78,6 +78,55 @@ export function scoreHand(hand: Card[]): HandScore {
 }
 
 /**
+ * Per-card point allocation for UI badges: face values on cortes/bebidas,
+ * the doubling credited to the pao-de-alho card, curve INCREMENTS on each
+ * linguiça/new acomp type. Sums to scoreHand().subtotal minus pratos
+ * (pratos are hand-level bonuses, not per-card).
+ */
+export function cardContributions(hand: Card[]): number[] {
+  const out = hand.map(() => 0)
+  const lCurve = CONFIG.linguicaCurve
+  const aCurve = CONFIG.acompCurve
+  let linguicaCount = 0
+  const seenAcomps = new Set<string>()
+  const unboundPaes: number[] = []
+  hand.forEach((card, i) => {
+    switch (card.kind) {
+      case 'carne': {
+        const value = CONFIG.cortePoints[card.corte]
+        out[i] = value
+        const pao = unboundPaes.shift()
+        if (pao !== undefined) out[pao] = value
+        break
+      }
+      case 'pao-de-alho':
+        unboundPaes.push(i)
+        break
+      case 'linguica':
+        linguicaCount += 1
+        out[i] =
+          linguicaCount < lCurve.length
+            ? lCurve[linguicaCount] - lCurve[linguicaCount - 1]
+            : 1
+        break
+      case 'acomp':
+        if (!seenAcomps.has(card.acomp)) {
+          seenAcomps.add(card.acomp)
+          const d = seenAcomps.size
+          out[i] = d < aCurve.length ? aCurve[d] - aCurve[d - 1] : 0
+        }
+        break
+      case 'bebida':
+        out[i] = CONFIG.bebidaFace
+        break
+      case 'abacaxi':
+        break
+    }
+  })
+  return out
+}
+
+/**
  * Bebida placement: best counts earn bebidaPlacementBonus[0], [1], ...;
  * ties split the pooled bonuses of the positions they occupy (floored);
  * the fewest-bebidas group takes the full penalty each (no splitting) and

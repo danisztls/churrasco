@@ -318,11 +318,74 @@ h1 {
   justify-content: center;
   gap: 0.4rem;
   text-align: center;
+  position: relative;
   transition:
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.3s ease,
     opacity 0.3s ease;
   animation: card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---- tooltip ---- */
+
+.card[data-tip]::after {
+  content: attr(data-tip);
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%) translateY(4px);
+  width: 230px;
+  background: #0c0a09;
+  color: var(--text);
+  border: 1px solid #57534e;
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
+  text-align: left;
+  white-space: normal;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 40;
+  transition:
+    opacity 0.25s ease 0.15s,
+    transform 0.25s ease 0.15s,
+    visibility 0.25s ease 0.15s;
+}
+
+.card:hover::after,
+.card:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+}
+
+.card:hover,
+.card:focus-visible {
+  z-index: 2;
+}
+
+/* ---- points badge ---- */
+
+.card-points {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.4rem;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 2rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  padding: 0.12rem 0.45rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  z-index: 1;
+}
+
+.card-points-zero {
+  background: #57534e;
 }
 
 @keyframes card-in {

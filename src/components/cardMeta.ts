@@ -64,6 +64,24 @@ export function labelName(label: string): string {
   return all[label] ?? label
 }
 
+/** Fuller mechanic description, shown as a hover tooltip. */
+export function cardTooltip(card: Card): string {
+  switch (card.kind) {
+    case 'carne':
+      return `${CORTE_META[card.corte].name}: ${CONFIG.cortePoints[card.corte]} pontos de face. Um Pão de Alho pego antes dobra este corte.`
+    case 'bebida':
+      return `${BEBIDA_META[card.bebida].name}: ${CONFIG.bebidaFace} pt de face. No fim, quem tiver mais bebidas ganha +${CONFIG.bebidaPlacementBonus[0]}, o 2º +${CONFIG.bebidaPlacementBonus[1]}, e quem tiver menos leva ${CONFIG.bebidaLastPenalty}. Conta para pratos.`
+    case 'acomp':
+      return `${ACOMP_META[card.acomp].name}: acompanhamento. Tipos distintos pontuam ${CONFIG.acompCurve.slice(1).join('/')}; repetidos não contam.`
+    case 'linguica':
+      return `Linguiça: iguais escalam ${CONFIG.linguicaCurve.slice(1, 4).join('/')}, depois +1 por extra. Não é corte: pão-de-alho não a dobra.`
+    case 'pao-de-alho':
+      return 'Pão de Alho: dobra o PRÓXIMO corte que você pegar (um só). Não vale para cortes já na mão; sem corte depois, vale 0.'
+    case 'abacaxi':
+      return 'Abacaxi: 0 pontos. Na sua vez, troque-o por uma carta aberta do buffet e passe — você ainda pega sua carta quando a vez voltar.'
+  }
+}
+
 export function cardMeta(card: Card): CardMeta {
   switch (card.kind) {
     case 'carne':
