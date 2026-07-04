@@ -1,5 +1,5 @@
 import { CONFIG } from '../game/config'
-import type { Acomp, Bebida, Card, Corte } from '../game/types'
+import type { Acomp, Bebida, Card, Corte, PratoReq } from '../game/types'
 
 export interface CardMeta {
   emoji: string
@@ -33,6 +33,22 @@ export const ACOMP_META: Record<Acomp, { emoji: string; name: string }> = {
   maionese: { emoji: '🥔', name: 'Maionese' },
   mandioca: { emoji: '🍠', name: 'Mandioca' },
   salada: { emoji: '🥗', name: 'Salada' }
+}
+
+/** Display meta for one prato-recipe requirement. */
+export function reqMeta(req: PratoReq): { emoji: string; name: string } {
+  switch (req.kind) {
+    case 'carne':
+      return CORTE_META[req.corte]
+    case 'acomp':
+      return ACOMP_META[req.acomp]
+    case 'bebida':
+      return BEBIDA_META[req.bebida]
+    case 'linguica':
+      return { emoji: '🌭', name: 'Linguiça' }
+    case 'pao-de-alho':
+      return { emoji: '🧄', name: 'Pão de Alho' }
+  }
 }
 
 /** Category (CSS suffix) for a plain log label (see game/log.ts cardLabel). */
@@ -78,7 +94,7 @@ export function cardTooltip(card: Card): string {
     case 'pao-de-alho':
       return 'Pão de Alho: dobra o PRÓXIMO corte que você pegar (um só). Não vale para cortes já na mão; sem corte depois, vale 0.'
     case 'abacaxi':
-      return 'Abacaxi: 0 pontos. Na sua vez, troque-o por uma carta aberta do buffet e passe — você ainda pega sua carta quando a vez voltar.'
+      return 'Abacaxi: 0 pontos. Ação grátis: na sua vez, troque-o por uma carta aberta do buffet — e ainda pegue ou passe no mesmo turno.'
   }
 }
 

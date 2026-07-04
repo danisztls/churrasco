@@ -1,5 +1,6 @@
 import { ACOMP_TYPES, CONFIG } from '../game/config'
 import { EVENTS } from '../game/events'
+import { reqMeta } from './cardMeta'
 
 const CORTE_NAMES: Record<string, string> = {
   picanha: 'Picanha',
@@ -68,12 +69,12 @@ export function Rules({ onClose }: { onClose: () => void }) {
           </li>
         </ul>
 
-        <h3>Pratos (bônus por trinca exata)</h3>
+        <h3>Pratos (bônus por receita exata na mão)</h3>
         <ul>
           {CONFIG.pratos.map((p) => (
             <li key={p.name}>
-              <strong>{p.name}</strong> (+{p.bonus}): {CORTE_NAMES[p.corte]} +{' '}
-              {p.acomp.replace(/-/g, ' ')} + {p.bebida}
+              <strong>{p.name}</strong> (+{p.bonus}):{' '}
+              {p.reqs.map((r) => reqMeta(r).name).join(' + ')}
             </li>
           ))}
         </ul>

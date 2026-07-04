@@ -165,6 +165,27 @@ describe('pratos', () => {
     ])
     expect(s.pratosTotal).toBe(8)
   })
+
+  it('espetinho de boteco: coalho + linguiça + pão, sem bebida', () => {
+    const s = scoreHand([acomp('queijo-coalho'), linguica(), pao()])
+    expect(s.pratos).toEqual([{ name: 'Espetinho de Boteco', bonus: 4 }])
+    // coalho 1 (distinto) + linguiça 1 + pão solto 0 + bônus 4
+    expect(s.subtotal).toBe(6)
+  })
+
+  it('2-card pratos: vaca atolada e churrasco de laje', () => {
+    const s = scoreHand([
+      carne('costela'),
+      acomp('mandioca'),
+      carne('coxao-duro'),
+      acomp('maionese')
+    ])
+    expect(s.pratos.map((p) => p.name).sort()).toEqual([
+      'Churrasco de Laje',
+      'Vaca Atolada'
+    ])
+    expect(s.pratosTotal).toBe(6)
+  })
 })
 
 describe('bebida placement edge cases', () => {

@@ -1,5 +1,26 @@
 import { CONFIG } from './config'
-import type { Card, HandScore, PlayerScore, PlayerSeat } from './types'
+import type {
+  Card,
+  HandScore,
+  PlayerScore,
+  PlayerSeat,
+  PratoReq
+} from './types'
+
+/** Does this card satisfy one prato-recipe requirement? */
+export function matchesPratoReq(card: Card, req: PratoReq): boolean {
+  switch (req.kind) {
+    case 'carne':
+      return card.kind === 'carne' && card.corte === req.corte
+    case 'acomp':
+      return card.kind === 'acomp' && card.acomp === req.acomp
+    case 'bebida':
+      return card.kind === 'bebida' && card.bebida === req.bebida
+    case 'linguica':
+    case 'pao-de-alho':
+      return card.kind === req.kind
+  }
+}
 
 /**
  * Scores one hand, everything except the bebida placement (which needs all
@@ -54,11 +75,8 @@ export function scoreHand(hand: Card[]): HandScore {
   const acomp = aCurve[Math.min(acompTypes.size, aCurve.length - 1)]
 
   const pratos = CONFIG.pratos
-    .filter(
-      (p) =>
-        hand.some((c) => c.kind === 'carne' && c.corte === p.corte) &&
-        hand.some((c) => c.kind === 'acomp' && c.acomp === p.acomp) &&
-        hand.some((c) => c.kind === 'bebida' && c.bebida === p.bebida)
+    .filter((p) =>
+      p.reqs.every((req) => hand.some((c) => matchesPratoReq(c, req)))
     )
     .map((p) => ({ name: p.name, bonus: p.bonus }))
   const pratosTotal = pratos.reduce((sum, p) => sum + p.bonus, 0)

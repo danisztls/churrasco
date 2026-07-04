@@ -238,12 +238,21 @@ Sushi Go (combo _entre_ categorias, não set dentro de uma). 1ª passada:
 | **Espetinho de Esquina** | coração    | vinagrete       | guaraná    | +5           |
 | **Fitness de Mentira**   | coxão duro | salada          | suco       | +3 (a piada) |
 
-Cada corte ancora um prato (usado uma vez). Queijo coalho, maionese e mandioca ficam
-fora dos pratos — seguem valendo na coleção de distintos. Não muda o deck, só
-adiciona uma camada de objetivo. Montar o prato exato é difícil (3 cartas
-específicas de 7), daí o bônus alto — mas é mais um acelerador, cuidar de runaway no
-playtest. Dá para pontuar mais de um prato; lista expansível (mais pratos = mais
-alvos).
+Na 1ª passada cada corte ancora um prato (usado uma vez) e queijo coalho, maionese
+e mandioca ficam fora. A **2ª passada** (playtest digital) incorpora os três órfãos
+com receitas de formas variadas e **sem bebida** — para não acoplar mais combos à
+corrida da gelada:
+
+| Prato                   | Receita                                | Bônus |
+| ----------------------- | -------------------------------------- | ----- |
+| **Espetinho de Boteco** | queijo coalho + linguiça + pão de alho | +4    |
+| **Vaca Atolada**        | costela + mandioca                     | +3    |
+| **Churrasco de Laje**   | coxão duro + maionese                  | +3    |
+
+Não muda o deck, só adiciona uma camada de objetivo. Montar o prato exato é difícil
+(3 cartas específicas de 7), daí o bônus alto — mas é mais um acelerador, cuidar de
+runaway no playtest. Dá para pontuar mais de um prato; lista expansível (mais
+pratos = mais alvos).
 
 ### Composição do deck (quantas de cada — 1ª passada)
 

@@ -1,4 +1,18 @@
-import type { Acomp, Bebida, Corte, RoundModifiers } from './types'
+import type {
+  Acomp,
+  Bebida,
+  Corte,
+  PratoReq,
+  PratoSpec,
+  RoundModifiers
+} from './types'
+
+// Recipe shorthands for the pratos table below.
+const carne = (corte: Corte): PratoReq => ({ kind: 'carne', corte })
+const acomp = (a: Acomp): PratoReq => ({ kind: 'acomp', acomp: a })
+const bebida = (b: Bebida): PratoReq => ({ kind: 'bebida', bebida: b })
+const linguica: PratoReq = { kind: 'linguica' }
+const pao: PratoReq = { kind: 'pao-de-alho' }
 
 /**
  * Every balance lever in one place. Values are the "1ª passada" from the design
@@ -71,50 +85,55 @@ export const CONFIG = {
   paoDeAlhoCopies: 5,
   abacaxiCopies: 4,
 
-  /** Pratos: exact corte + acomp + bebida in hand => bonus (non-exclusive). */
+  /**
+   * Pratos (combos): having every card of the recipe in hand => bonus, on top
+   * of what each card already scores (non-exclusive: one card may serve
+   * several pratos). The first 5 are the doc's "1ª passada" triples; the last
+   * 3 are digital-playtest additions with varied shapes and no bebida (they
+   * give the orphan acomps an identity without deepening the bebida race).
+   */
   pratos: [
     {
       name: 'Prato Raiz',
-      corte: 'picanha',
-      acomp: 'farofa',
-      bebida: 'cerveja',
+      reqs: [carne('picanha'), acomp('farofa'), bebida('cerveja')],
       bonus: 8
     },
     {
       name: 'Mineiro da Gema',
-      corte: 'costela',
-      acomp: 'feijao-tropeiro',
-      bebida: 'caipirinha',
+      reqs: [carne('costela'), acomp('feijao-tropeiro'), bebida('caipirinha')],
       bonus: 6
     },
     {
       name: 'Domingo em Família',
-      corte: 'fraldinha',
-      acomp: 'arroz',
-      bebida: 'suco',
+      reqs: [carne('fraldinha'), acomp('arroz'), bebida('suco')],
       bonus: 5
     },
     {
       name: 'Espetinho de Esquina',
-      corte: 'coracao',
-      acomp: 'vinagrete',
-      bebida: 'guarana',
+      reqs: [carne('coracao'), acomp('vinagrete'), bebida('guarana')],
       bonus: 5
     },
     {
       name: 'Fitness de Mentira',
-      corte: 'coxao-duro',
-      acomp: 'salada',
-      bebida: 'suco',
+      reqs: [carne('coxao-duro'), acomp('salada'), bebida('suco')],
+      bonus: 3
+    },
+    {
+      name: 'Espetinho de Boteco',
+      reqs: [acomp('queijo-coalho'), linguica, pao],
+      bonus: 4
+    },
+    {
+      name: 'Vaca Atolada',
+      reqs: [carne('costela'), acomp('mandioca')],
+      bonus: 3
+    },
+    {
+      name: 'Churrasco de Laje',
+      reqs: [carne('coxao-duro'), acomp('maionese')],
       bonus: 3
     }
-  ] as {
-    name: string
-    corte: Corte
-    acomp: Acomp
-    bebida: Bebida
-    bonus: number
-  }[]
+  ] as PratoSpec[]
 }
 
 export const ACOMP_TYPES: Acomp[] = [

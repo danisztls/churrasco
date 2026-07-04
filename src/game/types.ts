@@ -23,6 +23,21 @@ export type Card =
 
 export type CardKind = Card['kind']
 
+/** One required card in a prato (combo) recipe. */
+export type PratoReq =
+  | { kind: 'carne'; corte: Corte }
+  | { kind: 'acomp'; acomp: Acomp }
+  | { kind: 'bebida'; bebida: Bebida }
+  | { kind: 'linguica' }
+  | { kind: 'pao-de-alho' }
+
+export interface PratoSpec {
+  name: string
+  /** Distinct requirements; having ALL of them in hand awards the bonus. */
+  reqs: PratoReq[]
+  bonus: number
+}
+
 export interface BuffetSlot {
   card: Card
   faceUp: boolean

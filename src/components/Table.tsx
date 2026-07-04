@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
 import { CONFIG } from '../game/config'
 import { EVENTS } from '../game/events'
-import { bebidaPlacements, cardContributions, scoreHand } from '../game/scoring'
+import {
+  bebidaPlacements,
+  cardContributions,
+  matchesPratoReq,
+  scoreHand
+} from '../game/scoring'
 import type { Card, GameSnapshot } from '../game/types'
 import { useGameEngine } from '../multiplayer/useGameEngine'
 import { CardBack, CardView } from './CardView'
-import { ACOMP_META, BEBIDA_META, CORTE_META, cardMeta } from './cardMeta'
+import { cardMeta, reqMeta } from './cardMeta'
 import { GameLog } from './GameLog'
 
 function pendingActors(game: GameSnapshot): string[] {
@@ -328,23 +333,13 @@ function PratosPanel({ hand }: { hand: Card[] }) {
       </div>
       <ul>
         {CONFIG.pratos.map((p) => {
-          const parts = [
-            {
-              meta: CORTE_META[p.corte],
-              ok: hand.some((c) => c.kind === 'carne' && c.corte === p.corte)
-            },
-            {
-              meta: ACOMP_META[p.acomp],
-              ok: hand.some((c) => c.kind === 'acomp' && c.acomp === p.acomp)
-            },
-            {
-              meta: BEBIDA_META[p.bebida],
-              ok: hand.some((c) => c.kind === 'bebida' && c.bebida === p.bebida)
-            }
-          ]
+          const parts = p.reqs.map((req) => ({
+            meta: reqMeta(req),
+            ok: hand.some((c) => matchesPratoReq(c, req))
+          }))
           const have = parts.filter((x) => x.ok).length
           const state =
-            have === 3
+            have === parts.length
               ? 'prato-done'
               : have > 0
                 ? 'prato-progress'
@@ -363,7 +358,9 @@ function PratosPanel({ hand }: { hand: Card[] }) {
                 ))}
               </span>
               <span className="prato-status">
-                {have === 3 ? `+${p.bonus} ✓` : `${have}/3 · +${p.bonus}`}
+                {have === parts.length
+                  ? `+${p.bonus} ✓`
+                  : `${have}/${parts.length} · +${p.bonus}`}
               </span>
             </li>
           )
