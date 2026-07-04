@@ -89,9 +89,8 @@ export function Table() {
   } else if (myTurn && game.turnStep === 'give') {
     banner = 'Escolha 1 carta da mão para o monte das sobras.'
   } else if (myTurn && game.turnStep === 'reveal') {
-    banner = game.modifiers.forcedTake
-      ? 'Vire a próxima carta — ela é sua!'
-      : 'Sua vez! Vire a próxima carta.'
+    // Only Depois Acaba keeps the flip as a player move.
+    banner = 'Vire a próxima carta — ela é sua!'
   } else if (myTurn) {
     banner = 'Pegue uma carta do buffet — ou passe.'
   } else {
@@ -171,6 +170,89 @@ export function Table() {
           ))}
         </ul>
 
+        <div className="action-bar">
+          {canReveal && (
+            <button
+              type="button"
+              className="btn btn-primary"
+              onClick={() => dispatch({ type: 'reveal' })}
+            >
+              Virar — a carta é sua!
+            </button>
+          )}
+          {inActStep &&
+            selectedSlot !== null &&
+            takeSlots.has(selectedSlot) && (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() => dispatch({ type: 'take', slot: selectedSlot })}
+              >
+                Pegar {cardMeta(game.buffet[selectedSlot].card).name}
+              </button>
+            )}
+          {inActStep &&
+            selectedSlot !== null &&
+            abacaxiSlots.has(selectedSlot) && (
+              <button
+                type="button"
+                className="btn"
+                onClick={() =>
+                  dispatch({ type: 'abacaxi', slot: selectedSlot })
+                }
+              >
+                Trocar pelo 🍍
+              </button>
+            )}
+          {inActStep && (
+            <button
+              type="button"
+              className="btn"
+              disabled={!canPass}
+              title={
+                canPass
+                  ? 'Deixa para depois — a vez volta'
+                  : 'Sem cartas viradas para baixo: tem que pegar'
+              }
+              onClick={() => dispatch({ type: 'pass' })}
+            >
+              Passar
+            </button>
+          )}
+          {selectedHand !== null &&
+            swapDirs.map((dir) => (
+              <button
+                key={dir}
+                type="button"
+                className="btn btn-primary"
+                onClick={() =>
+                  dispatch({ type: 'event-swap', handIdx: selectedHand, dir })
+                }
+              >
+                Trocar com {dir === 'left' ? leftSeat.name : rightSeat.name}
+              </button>
+            ))}
+          {selectedHand !== null &&
+            handAction &&
+            handAction !== 'event-swap' &&
+            mySeat &&
+            handConfirmLabel(mySeat.hand[selectedHand]) && (
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={() =>
+                  dispatch({
+                    type: handAction as
+                      'event-discard' | 'event-gift' | 'event-give',
+                    handIdx: selectedHand
+                  })
+                }
+              >
+                {handConfirmLabel(mySeat.hand[selectedHand])}
+              </button>
+            )}
+        </div>
+
         <div className="buffet">
           {game.buffet.map((slot, i) =>
             slot.faceUp ? (
@@ -188,92 +270,11 @@ export function Table() {
             ) : (
               <CardBack
                 key={slot.card.id}
-                clickable={canReveal && i === nextRevealIdx}
-                onClick={
-                  canReveal && i === nextRevealIdx
-                    ? () => dispatch({ type: 'reveal' })
-                    : undefined
-                }
+                highlight={canReveal && i === nextRevealIdx}
               />
             )
           )}
         </div>
-
-        {(inActStep || (selectedHand !== null && handAction)) && (
-          <div className="action-bar">
-            {inActStep &&
-              selectedSlot !== null &&
-              takeSlots.has(selectedSlot) && (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() => dispatch({ type: 'take', slot: selectedSlot })}
-                >
-                  Pegar {cardMeta(game.buffet[selectedSlot].card).name}
-                </button>
-              )}
-            {inActStep &&
-              selectedSlot !== null &&
-              abacaxiSlots.has(selectedSlot) && (
-                <button
-                  type="button"
-                  className="btn"
-                  onClick={() =>
-                    dispatch({ type: 'abacaxi', slot: selectedSlot })
-                  }
-                >
-                  Trocar pelo 🍍
-                </button>
-              )}
-            {inActStep && (
-              <button
-                type="button"
-                className="btn"
-                disabled={!canPass}
-                title={
-                  canPass
-                    ? 'Deixa para depois — a vez volta'
-                    : 'Sem cartas viradas para baixo: tem que pegar'
-                }
-                onClick={() => dispatch({ type: 'pass' })}
-              >
-                Passar
-              </button>
-            )}
-            {selectedHand !== null &&
-              swapDirs.map((dir) => (
-                <button
-                  key={dir}
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() =>
-                    dispatch({ type: 'event-swap', handIdx: selectedHand, dir })
-                  }
-                >
-                  Trocar com {dir === 'left' ? leftSeat.name : rightSeat.name}
-                </button>
-              ))}
-            {selectedHand !== null &&
-              handAction &&
-              handAction !== 'event-swap' &&
-              mySeat &&
-              handConfirmLabel(mySeat.hand[selectedHand]) && (
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  onClick={() =>
-                    dispatch({
-                      type: handAction as
-                        'event-discard' | 'event-gift' | 'event-give',
-                      handIdx: selectedHand
-                    })
-                  }
-                >
-                  {handConfirmLabel(mySeat.hand[selectedHand])}
-                </button>
-              )}
-          </div>
-        )}
 
         {mySeat ? (
           <>

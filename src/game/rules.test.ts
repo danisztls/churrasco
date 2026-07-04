@@ -31,14 +31,15 @@ function playTurn(
 const firstTake = (moves: Move[]) => moves.find((m) => m.type === 'take')!
 
 describe('newGame', () => {
-  it('deals M = N+2 buffet with 2 face-up, deck holds the rest', () => {
+  it('deals M = N+2 buffet with 2 face-up + the auto-flip for the opener', () => {
     const snap = newGame(PLAYERS, 42, NO_EVENTS)
     expect(snap.buffet).toHaveLength(5)
-    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(2)
+    // faceUpAtStart plus the first player's automatic turn-opening flip.
+    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
     expect(snap.deck).toHaveLength(68 - 5)
     expect(snap.round).toBe(1)
     expect(snap.turnSeat).toBe(snap.startSeat)
-    expect(snap.turnStep).toBe('reveal')
+    expect(snap.turnStep).toBe('act')
   })
 
   it('total deck is 68 food cards', () => {
@@ -55,17 +56,19 @@ describe('newGame', () => {
 })
 
 describe('turn flow', () => {
-  it('requires reveal before acting, then take removes the slot', () => {
+  it('take removes the slot; the next turn auto-flips another card', () => {
     let snap = newGame(PLAYERS, 42, NO_EVENTS)
     const player = currentId(snap)
-    expect(() => applyMove(snap, player, { type: 'take', slot: 0 })).toThrow()
-    snap = applyMove(snap, player, legalMoves(snap, player)[0]) // reveal
-    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
+    expect(legalMoves(snap, player).some((m) => m.type === 'reveal')).toBe(
+      false
+    )
     const before = snap.buffet.length
     snap = applyMove(snap, player, firstTake(legalMoves(snap, player)))
     expect(snap.buffet).toHaveLength(before - 1)
     expect(snap.seats.find((s) => s.id === player)!.hand).toHaveLength(1)
     expect(currentId(snap)).not.toBe(player)
+    // 3 were up, one left in a hand, the new turn flipped another: 3 again.
+    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
   })
 
   it('rejects moves from a player out of turn', () => {
@@ -75,13 +78,19 @@ describe('turn flow', () => {
     expect(legalMoves(snap, notCurrent)).toHaveLength(0)
   })
 
-  it('reveal flips the first face-down card (no choice)', () => {
-    const snap = newGame(PLAYERS, 42, NO_EVENTS)
-    const reveals = legalMoves(snap, currentId(snap))
-    expect(reveals).toEqual([{ type: 'reveal' }])
-    const firstDown = snap.buffet.findIndex((s) => !s.faceUp)
-    const next = applyMove(snap, currentId(snap), { type: 'reveal' })
-    expect(next.buffet[firstDown].faceUp).toBe(true)
+  it('the auto-flip opens the first face-down slot, in order', () => {
+    let snap = newGame(PLAYERS, 42, NO_EVENTS)
+    // Slots 0-2 are up (2 at deal + the opener's flip); 3-4 still down.
+    expect(snap.buffet.map((s) => s.faceUp)).toEqual([
+      true,
+      true,
+      true,
+      false,
+      false
+    ])
+    snap = applyMove(snap, currentId(snap), { type: 'take', slot: 0 })
+    // Next turn flipped the first remaining face-down (old slot 3).
+    expect(snap.buffet.map((s) => s.faceUp)).toEqual([true, true, true, false])
   })
 
   it('pass requeues the player; round ends when everyone took', () => {
@@ -109,8 +118,26 @@ describe('anti-stall rule', () => {
     }
     const moves = legalMoves(snap, currentId(snap))
     expect(moves.some((m) => m.type === 'pass')).toBe(false)
-    expect(moves.some((m) => m.type === 'abacaxi')).toBe(false)
-    expect(moves.every((m) => m.type === 'take')).toBe(true)
+    expect(moves.some((m) => m.type === 'take')).toBe(true)
+  })
+
+  it('abacaxi swap stays legal with everything revealed (it spends the abacaxi)', () => {
+    const snap = newGame(PLAYERS, 42, NO_EVENTS)
+    snap.buffet.forEach((s) => (s.faceUp = true))
+    snap.turnStep = 'act'
+    const seat = snap.seats[snap.turnSeat]
+    seat.hand.push({ id: 900, kind: 'abacaxi' })
+    // An abacaxi lying on the buffet is never a swap target (no-op loop).
+    snap.buffet[0].card = { id: 901, kind: 'abacaxi' }
+    const moves = legalMoves(snap, seat.id)
+    expect(moves.some((m) => m.type === 'pass')).toBe(false)
+    const slots = moves.flatMap((m) => (m.type === 'abacaxi' ? [m.slot] : []))
+    expect(slots).toEqual([1, 2, 3, 4])
+    const next = applyMove(snap, seat.id, { type: 'abacaxi', slot: 1 })
+    const me = next.seats.find((s) => s.id === seat.id)!
+    expect(me.tookThisRound).toBe(false)
+    expect(me.hand.some((c) => c.kind === 'abacaxi')).toBe(false)
+    expect(next.buffet[1].card.kind).toBe('abacaxi')
   })
 })
 
@@ -121,7 +148,8 @@ describe('carryover', () => {
       snap = playTurn(snap, firstTake)
     }
     expect(snap.buffet).toHaveLength(5)
-    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(2)
+    // 2 carryover leftovers + the opener's automatic flip.
+    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
   })
 
   it('rotates the start seat every round', () => {

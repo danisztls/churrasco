@@ -53,20 +53,25 @@ _Não Alimente os Animais_ (todos descartam 1), _Amigo Secreto_ (todos passam
 
 ## Interpretações de regra (decisões digitais, mude em `config.ts`/`events.ts`)
 
-1. **Anti-trava**: passar (e trocar abacaxi) só é permitido enquanto houver
-   carta virada para baixo; com tudo revelado, é obrigatório pegar. Sob
-   _Churrasqueiro Profissa_ isso torna a rodada um draft aberto sem passar.
-2. **Empate na bebida**: empatados dividem o _pool_ das colocações que ocupam
+1. **Anti-trava**: passar só é permitido enquanto houver carta virada para
+   baixo; com tudo revelado, é obrigatório pegar. A troca do abacaxi fica fora
+   da trava — cada troca gasta um abacaxi da mão, então não estica a rodada ao
+   infinito (trocar abacaxi por abacaxi é proibido) — e só _Depois Acaba_ a
+   bloqueia. Sob _Churrasqueiro Profissa_ a rodada vira um draft aberto.
+2. **Virada automática**: revelar a próxima carta fechada não é decisão, então
+   o motor vira sozinho na abertura de cada turno. Exceção: _Depois Acaba_,
+   onde virar É o turno (vire-e-leve) e continua sendo ação do jogador.
+3. **Empate na bebida**: empatados dividem o _pool_ das colocações que ocupam
    (piso); empate no último não divide (−4 cada); todos iguais = lavada.
-3. **Pratos não exclusivos**: uma carta pode servir a mais de um prato
+4. **Pratos não exclusivos**: uma carta pode servir a mais de um prato
    (ex.: um suco fecha Domingo em Família e Fitness de Mentira).
-4. **7 acompanhamentos distintos** valem o teto da tabela (25).
-5. **Mãos ocultas** dos rivais na UI (contagem de cartas e de bebidas é
+5. **7 acompanhamentos distintos** valem o teto da tabela (25).
+6. **Mãos ocultas** dos rivais na UI (contagem de cartas e de bebidas é
    pública — a corrida da gelada precisa ser visível).
-6. **Álbum da Copa**: você escolhe a carta que dá e o vizinho; a carta que
+7. **Álbum da Copa**: você escolhe a carta que dá e o vizinho; a carta que
    recebe é aleatória (mãos são ocultas). Resolve em ordem de mesa.
-7. **Brinde!** desempata por mais cartas de carne; persistindo, ordem da mesa.
-8. **Abre a Boquinha**: a carta comprada vai ao vizinho seguinte na ordem; a
+8. **Brinde!** desempata por mais cartas de carne; persistindo, ordem da mesa.
+9. **Abre a Boquinha**: a carta comprada vai ao vizinho seguinte na ordem; a
    ordem de chegada na mão do vizinho conta para o pão-de-alho dele.
 
 ## Playtest solo e análise

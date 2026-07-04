@@ -28,11 +28,11 @@ export function Rules({ onClose }: { onClose: () => void }) {
 
         <h3>Sua vez</h3>
         <p>
-          O buffet tem N+2 cartas. Na sua vez, <strong>vire</strong> uma carta
-          fechada e então <strong>pegue</strong> qualquer carta aberta (e saia
-          da rodada) — ou <strong>passe</strong> e espere corte melhor. Só dá
-          para passar enquanto houver carta fechada. As 2 cartas que sobram
-          abrem a rodada seguinte.
+          O buffet tem N+2 cartas. Na sua vez, uma carta fechada vira sozinha;
+          então <strong>pegue</strong> qualquer carta aberta (e saia da rodada)
+          — ou <strong>passe</strong> e espere corte melhor. Só dá para passar
+          enquanto houver carta fechada. As 2 cartas que sobram abrem a rodada
+          seguinte.
         </p>
 
         <h3>Pontuação</h3>
@@ -63,7 +63,8 @@ export function Rules({ onClose }: { onClose: () => void }) {
           </li>
           <li>
             🍍 <strong>Abacaxi</strong>: 0 pts — na sua vez, troque-o por uma
-            carta aberta do buffet e passe
+            carta aberta do buffet e continue na rodada (vale até com tudo
+            revelado)
           </li>
         </ul>
 

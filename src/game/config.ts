@@ -9,8 +9,12 @@ export const CONFIG = {
   maxPlayers: 6,
   /** Game ends when every hand reaches this size. */
   handSize: 7,
-  /** Buffet size per round: M = N + buffetExtra. */
-  buffetExtra: 2,
+  /**
+   * Buffet slots per round as a function of player count (event deltas add on
+   * top). Default M = N + 2. Playtest alternatives: (n) => n * 2 (fartura),
+   * (n) => n + 3 (meio-termo).
+   */
+  buffetSlots: (n: number): number => n + 2,
   /** Cards already face-up at round start (carryover feeds this from round 2). */
   faceUpAtStart: 2,
   /**

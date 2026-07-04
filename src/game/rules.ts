@@ -84,7 +84,7 @@ export function newGame(
 /** Fills the buffet up to M = N + extra (+delta), keeping carryover face-up. */
 function dealRound(snap: GameSnapshot): void {
   const n = snap.seats.length
-  const target = n + CONFIG.buffetExtra + snap.modifiers.buffetDelta
+  const target = CONFIG.buffetSlots(n) + snap.modifiers.buffetDelta
   // A fresh table (round 1, or after Tá Pegando Fogo) has no carryover:
   // flip the first cards dealt instead.
   const isFreshDeal = snap.buffet.length === 0
@@ -97,7 +97,22 @@ function dealRound(snap: GameSnapshot): void {
   }
   if (snap.modifiers.revealAll) snap.buffet.forEach((s) => (s.faceUp = true))
   snap.turnSeat = snap.startSeat
-  snap.turnStep = stepFor(snap)
+  beginTurn(snap)
+}
+
+/**
+ * Turn opener. Flipping the next face-down card carries no decision, so the
+ * engine does it automatically — except under Depois Acaba, where the flip IS
+ * the turn (what you flip is yours) and stays a player move.
+ */
+function beginTurn(snap: GameSnapshot): void {
+  if (snap.modifiers.forcedTake) {
+    snap.turnStep = stepFor(snap)
+    return
+  }
+  const idx = snap.buffet.findIndex((s) => !s.faceUp)
+  if (idx !== -1) snap.buffet[idx].faceUp = true
+  snap.turnStep = 'act'
 }
 
 /** Round >= 2 opener: event draw + hooks around the buffet refill. */
@@ -190,13 +205,18 @@ export function legalMoves(snap: GameSnapshot, playerId: string): Move[] {
   snap.buffet.forEach((s, i) => {
     if (s.faceUp) moves.push({ type: 'take', slot: i })
   })
-  if (passIsLegal(snap)) {
-    moves.push({ type: 'pass' })
-    if (seat.hand.some((c) => c.kind === 'abacaxi')) {
-      snap.buffet.forEach((s, i) => {
-        if (s.faceUp) moves.push({ type: 'abacaxi', slot: i })
-      })
-    }
+  if (passIsLegal(snap)) moves.push({ type: 'pass' })
+  // The abacaxi swap is progress, not stalling — each swap spends an abacaxi
+  // from the hand, so it can't loop. It skips the anti-stall face-down gate
+  // and is blocked only by "no passing" events (it still behaves as a pass).
+  if (
+    snap.modifiers.passAllowed &&
+    seat.hand.some((c) => c.kind === 'abacaxi')
+  ) {
+    snap.buffet.forEach((s, i) => {
+      if (s.faceUp && s.card.kind !== 'abacaxi')
+        moves.push({ type: 'abacaxi', slot: i })
+    })
   }
   return moves
 }
@@ -253,9 +273,11 @@ export function applyMove(
     }
     case 'abacaxi': {
       if (next.turnStep !== 'act') throw new Error('revele uma carta primeiro')
-      if (!passIsLegal(next)) throw new Error('troca não é permitida agora')
+      if (!next.modifiers.passAllowed)
+        throw new Error('troca não é permitida agora')
       const slot = next.buffet[move.slot]
-      if (!slot || !slot.faceUp) throw new Error('carta inválida para trocar')
+      if (!slot || !slot.faceUp || slot.card.kind === 'abacaxi')
+        throw new Error('carta inválida para trocar')
       const idx = seat.hand.findIndex((c) => c.kind === 'abacaxi')
       if (idx === -1) throw new Error('você não tem abacaxi')
       logEntry(next, seat, 'abacaxi', slot.card, faceUpCount(next))
@@ -411,7 +433,7 @@ function finishTurn(snap: GameSnapshot): void {
     i = (i + dir + n) % n
   } while (snap.seats[i].tookThisRound || (i === last && !othersAllTook))
   snap.turnSeat = i
-  snap.turnStep = stepFor(snap)
+  beginTurn(snap)
 }
 
 function endRound(snap: GameSnapshot): void {

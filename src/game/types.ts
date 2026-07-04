@@ -57,7 +57,7 @@ export type EventId =
  * Per-round rule modifiers, reset every round and set by the event card.
  */
 export interface RoundModifiers {
-  /** Extra buffet cards beyond N + buffetExtra (Primo Rico: +2). */
+  /** Extra buffet cards beyond CONFIG.buffetSlots(n) (Primo Rico: +2). */
   buffetDelta: number
   /** Depois Acaba: false = passing forbidden. */
   passAllowed: boolean
@@ -79,6 +79,8 @@ export interface RoundModifiers {
 
 export type GamePhase = 'playing' | 'scored'
 
+/** 'reveal' only occurs under Depois Acaba (elsewhere the flip is automatic);
+ * 'give' is the post-take step under As Sobras de Ontem. */
 export type TurnStep = 'reveal' | 'act' | 'give'
 
 /** Simultaneous pick-from-hand phase (Não Alimente / Amigo Secreto). */

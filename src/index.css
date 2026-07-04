@@ -417,8 +417,10 @@ h1 {
   transform: translateY(-2px) scale(0.98);
 }
 
-/* The next card to be flipped invites the tap. */
-.card-back.card-clickable {
+/* The next card to be flipped pulses; the button above does the flipping. */
+.card-back.card-next {
+  opacity: 1;
+  box-shadow: 0 0 0 2px var(--accent);
   animation:
     card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     pulse 1.8s ease-in-out 0.6s infinite;
@@ -502,17 +504,16 @@ h1 {
 
 /* ---- actions ---- */
 
+/* Inline strip right above the buffet: every action button lives here.
+   min-height reserves the row so buttons appearing/vanishing don't shift
+   the cards below. */
 .action-bar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
   justify-content: center;
-  padding: 0.8rem;
-  background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(6px);
+  align-items: center;
+  min-height: 3.6rem;
 }
 
 .btn {

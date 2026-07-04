@@ -50,7 +50,7 @@ describe('primo rico', () => {
   it('deals 2 extra buffet cards for the round', () => {
     const snap = gameWithEvent('primo-rico')
     expect(snap.currentEvent).toBe('primo-rico')
-    expect(snap.buffet).toHaveLength(3 + CONFIG.buffetExtra + 2)
+    expect(snap.buffet).toHaveLength(CONFIG.buffetSlots(3) + 2)
   })
 })
 
@@ -153,7 +153,8 @@ describe('tá pegando fogo, bicho!', () => {
     expect(snap.seats.every((s) => s.hand.length === 1)).toBe(true)
     expect(snap.discard).toHaveLength(5) // 2 carryover + 3 dealt, all burned
     expect(snap.buffet).toHaveLength(5)
-    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(2)
+    // Fresh redeal: 2 at start + the opener's automatic flip.
+    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
     expect(new Set(allCardIds(snap)).size).toBe(68)
   })
 })
@@ -272,8 +273,8 @@ describe('as sobras de ontem', () => {
       .filter((s) => !s.faceUp)
       .map((s) => s.card.id)
     expect(snap.sobras).toHaveLength(0)
-    expect(faceDownIds).toHaveLength(3)
-    // Round 3's face-down cards are exactly the contributed pile.
+    // The 3 pile cards were dealt face-down; the opener's auto-flip opened one.
+    expect(faceDownIds).toHaveLength(2)
     expect(snap.seats.every((s) => s.hand.length === 1)).toBe(true)
   })
 })

@@ -37,6 +37,7 @@ export function botMove(
   const seat = snap.seats.find((s) => s.id === seatId)!
   const pick = <T>(arr: T[]): T => arr[Math.floor(rand() * arr.length)]
 
+  // Only Depois Acaba still offers a reveal move (flip-and-take).
   const reveals = moves.filter((m) => m.type === 'reveal')
   if (reveals.length > 0) return pick(reveals)
 
