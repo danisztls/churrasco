@@ -62,9 +62,9 @@ export function Rules({ onClose }: { onClose: () => void }) {
             {CONFIG.bebidaLastPenalty}
           </li>
           <li>
-            🍍 <strong>Abacaxi</strong>: 0 pts — na sua vez, troque-o por uma
-            carta aberta do buffet e continue na rodada (vale até com tudo
-            revelado)
+            🍍 <strong>Abacaxi</strong>: 0 pts — ação grátis: na sua vez,
+            troque-o por uma carta aberta do buffet e ainda pegue ou passe no
+            mesmo turno (vale até com tudo revelado)
           </li>
         </ul>
 

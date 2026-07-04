@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
+import { CONFIG } from '../game/config'
 import { EVENTS } from '../game/events'
 import { bebidaPlacements, cardContributions, scoreHand } from '../game/scoring'
 import type { Card, GameSnapshot } from '../game/types'
 import { useGameEngine } from '../multiplayer/useGameEngine'
 import { CardBack, CardView } from './CardView'
-import { cardMeta } from './cardMeta'
+import { ACOMP_META, BEBIDA_META, CORTE_META, cardMeta } from './cardMeta'
 import { GameLog } from './GameLog'
 
 function pendingActors(game: GameSnapshot): string[] {
@@ -30,7 +31,6 @@ export function Table() {
   ])
 
   if (!game) return null
-  const n = game.seats.length
   const turnSeat = game.seats[game.turnSeat]
   const myTurn = turnSeat.id === me.id
   const myIdx = game.seats.findIndex((s) => s.id === me.id)
@@ -59,11 +59,13 @@ export function Table() {
   const handIdxs = new Set(
     handMoves.map((m) => ('handIdx' in m ? m.handIdx : -1))
   )
-  const swapDirs =
+  const swapTargets =
     selectedHand === null
       ? []
       : myMoves.flatMap((m) =>
-          m.type === 'event-swap' && m.handIdx === selectedHand ? [m.dir] : []
+          m.type === 'event-swap' && m.handIdx === selectedHand
+            ? [m.target]
+            : []
         )
   const handAction = handMoves[0]?.type
 
@@ -84,7 +86,7 @@ export function Table() {
         : `Esperando os presentes: ${waitingNames.join(', ')}`
     else
       banner = mine
-        ? 'Escolha 1 carta sua e o vizinho da troca.'
+        ? 'Escolha 1 carta sua e com quem trocar.'
         : `${waitingNames[0] ?? '...'} está trocando figurinha...`
   } else if (myTurn && game.turnStep === 'give') {
     banner = 'Escolha 1 carta da mão para o monte das sobras.'
@@ -96,9 +98,6 @@ export function Table() {
   } else {
     banner = `Vez de ${turnSeat.name}`
   }
-
-  const leftSeat = game.seats[(myIdx - 1 + n) % n]
-  const rightSeat = game.seats[(myIdx + 1) % n]
 
   const handConfirmLabel = (card: Card): string | null => {
     const name = cardMeta(card).name
@@ -197,9 +196,10 @@ export function Table() {
               <button
                 type="button"
                 className="btn"
-                onClick={() =>
+                onClick={() => {
                   dispatch({ type: 'abacaxi', slot: selectedSlot })
-                }
+                  setSelectedSlot(null)
+                }}
               >
                 Trocar pelo 🍍
               </button>
@@ -220,16 +220,21 @@ export function Table() {
             </button>
           )}
           {selectedHand !== null &&
-            swapDirs.map((dir) => (
+            swapTargets.map((target) => (
               <button
-                key={dir}
+                key={target}
                 type="button"
                 className="btn btn-primary"
                 onClick={() =>
-                  dispatch({ type: 'event-swap', handIdx: selectedHand, dir })
+                  dispatch({
+                    type: 'event-swap',
+                    handIdx: selectedHand,
+                    target
+                  })
                 }
               >
-                Trocar com {dir === 'left' ? leftSeat.name : rightSeat.name}
+                Trocar com{' '}
+                {game.seats.find((s) => s.id === target)?.name ?? '?'}
               </button>
             ))}
           {selectedHand !== null &&
@@ -289,6 +294,7 @@ export function Table() {
               }}
             />
             <ScoreStrip game={game} myIdx={myIdx} />
+            <PratosPanel hand={mySeat.hand} />
           </>
         ) : (
           <p className="muted">Você entrou no meio do jogo — assistindo.</p>
@@ -309,6 +315,60 @@ export function Table() {
         )}
       </div>
       <GameLog game={game} />
+    </div>
+  )
+}
+
+/** Every prato (combo) with live status: done, in progress, or untouched. */
+function PratosPanel({ hand }: { hand: Card[] }) {
+  return (
+    <div className="pratos-panel">
+      <div className="hand-header">
+        <span>⭐ Pratos (combos)</span>
+      </div>
+      <ul>
+        {CONFIG.pratos.map((p) => {
+          const parts = [
+            {
+              meta: CORTE_META[p.corte],
+              ok: hand.some((c) => c.kind === 'carne' && c.corte === p.corte)
+            },
+            {
+              meta: ACOMP_META[p.acomp],
+              ok: hand.some((c) => c.kind === 'acomp' && c.acomp === p.acomp)
+            },
+            {
+              meta: BEBIDA_META[p.bebida],
+              ok: hand.some((c) => c.kind === 'bebida' && c.bebida === p.bebida)
+            }
+          ]
+          const have = parts.filter((x) => x.ok).length
+          const state =
+            have === 3
+              ? 'prato-done'
+              : have > 0
+                ? 'prato-progress'
+                : 'prato-off'
+          return (
+            <li key={p.name} className={`prato-row ${state}`}>
+              <span className="prato-name">{p.name}</span>
+              <span className="prato-parts">
+                {parts.map((x) => (
+                  <span
+                    key={x.meta.name}
+                    className={`prato-part${x.ok ? ' prato-part-ok' : ''}`}
+                  >
+                    {x.meta.emoji} {x.meta.name}
+                  </span>
+                ))}
+              </span>
+              <span className="prato-status">
+                {have === 3 ? `+${p.bonus} ✓` : `${have}/3 · +${p.bonus}`}
+              </span>
+            </li>
+          )
+        })}
+      </ul>
     </div>
   )
 }

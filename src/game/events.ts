@@ -162,7 +162,7 @@ export const EVENTS: Record<EventId, EventSpec> = {
   'album-copa': {
     name: 'Álbum da Copa',
     emoji: '⚽',
-    desc: 'Na ordem da mesa: dê 1 carta a um vizinho e receba 1 aleatória dele.',
+    desc: 'Na ordem da mesa: dê 1 carta a quem quiser e receba 1 aleatória dele.',
     postDeal: (snap) => {
       if (snap.seats.length < 2) return
       const n = snap.seats.length

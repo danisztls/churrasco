@@ -146,9 +146,9 @@ cartas. Cada uma é um mecanismo conhecido-bom mapeado pro churrasco:
   montar e **teto maior, escala melhor** que a linguiça — quer variar, não
   acumular.
 - **Abacaxi** — utilidade (Sushi Go: _chopstick_), **0 pontos**: na sua vez, troque-o
-  por uma carta revelada do buffet e passe. A troca é net 0, e passar só adia sua
-  compra normal (você pega quando a vez volta), então todos fecham a rodada iguais.
-  Converte um slot morto numa carta escolhida.
+  por uma carta revelada do buffet como **ação adicional** — no mesmo turno você
+  ainda pega ou passa normalmente. A troca é net 0 (abacaxi sai, carta entra), então
+  todos fecham a rodada iguais. Converte um slot morto numa carta escolhida.
 
 Mapa de mecanismos: carne = acúmulo de valor bruto; pão-de-alho = multiplicador
 (combo com carne); gelada = maioria/minoria (competição); acompanhamentos = set de
@@ -210,9 +210,9 @@ um leva −4). Se todos tiverem a mesma quantidade, é wash. Com 3 jogadores o 2
 do meio; com 5-6, dá para esticar (3º ainda +2) se a disputa ficar rasa.
 
 **Abacaxi:** 0 pontos — só ferramenta. Na sua vez, **troque-o por uma carta revelada
-do buffet e passe** (a troca é net 0: abacaxi sai, carta entra). Como passar só adia
-a sua compra normal — você ainda pega sua carta quando a vez volta — todos fecham a
-rodada com a mesma quantidade. Converte um slot morto numa carta escolhida.
+do buffet como ação adicional** (a troca é net 0: abacaxi sai, carta entra) — no
+mesmo turno você ainda pega ou passa normalmente, então todos fecham a rodada com a
+mesma quantidade. Converte um slot morto numa carta escolhida.
 
 Aferição rápida (mãos de 7, caem ~21-24, equilibradas):
 
@@ -322,7 +322,8 @@ Deck atual (~15 tipos, saca ~7-8 por jogo):
 **Troca / distribuição:**
 
 - _Amigo secreto_ — todos passam 1 carta da mão para o próximo (o "presente").
-- _Álbum da Copa_ — você troca 1 carta da mão com a de um vizinho à escolha.
+- _Álbum da Copa_ — você troca 1 carta da mão com a de um jogador à escolha
+  (qualquer um da mesa; recebe carta aleatória da mão dele).
 - _Abre a boquinha_ — a carta que você escolhe vai para a pessoa do lado (você
   compra para o vizinho e recebe do outro lado). Net +1 cada.
 - _As sobras de ontem_ — ao comprar, cada um põe 1 carta da mão num monte virado

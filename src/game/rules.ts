@@ -148,15 +148,6 @@ function passIsLegal(snap: GameSnapshot): boolean {
 const seatIdx = (snap: GameSnapshot, playerId: string) =>
   snap.seats.findIndex((s) => s.id === playerId)
 
-const neighborIdx = (
-  snap: GameSnapshot,
-  idx: number,
-  dir: 'left' | 'right'
-) => {
-  const n = snap.seats.length
-  return dir === 'left' ? (idx - 1 + n) % n : (idx + 1) % n
-}
-
 /** Legal moves for a given player (may be empty; event phases are not
  * turn-gated, so different players can have moves at the same time). */
 export function legalMoves(snap: GameSnapshot, playerId: string): Move[] {
@@ -169,11 +160,13 @@ export function legalMoves(snap: GameSnapshot, playerId: string): Move[] {
     const hand = snap.seats[idx].hand
     if (snap.pending.kind === 'swap') {
       if (snap.pending.queue[0] !== playerId || hand.length === 0) return []
-      const dirs = (['left', 'right'] as const).filter(
-        (dir) => snap.seats[neighborIdx(snap, idx, dir)].hand.length > 0
+      const targets = snap.seats.filter(
+        (s, i) => i !== idx && s.hand.length > 0
       )
       hand.forEach((_, handIdx) => {
-        dirs.forEach((dir) => moves.push({ type: 'event-swap', handIdx, dir }))
+        targets.forEach((t) =>
+          moves.push({ type: 'event-swap', handIdx, target: t.id })
+        )
       })
       return moves
     }
@@ -234,7 +227,7 @@ export function applyMove(
     case 'event-gift':
       return applySimul(next, playerId, move.type, move.handIdx)
     case 'event-swap':
-      return applySwap(next, playerId, move.handIdx, move.dir)
+      return applySwap(next, playerId, move.handIdx, move.target)
     case 'event-give':
       return applySobrasGive(next, playerId, move.handIdx)
   }
@@ -284,7 +277,7 @@ export function applyMove(
       const [abacaxi] = seat.hand.splice(idx, 1)
       seat.hand.push(slot.card)
       slot.card = abacaxi
-      finishTurn(next)
+      // Free action: the turn continues — still take or pass afterwards.
       return next
     }
   }
@@ -357,7 +350,7 @@ function applySwap(
   snap: GameSnapshot,
   playerId: string,
   handIdx: number,
-  dir: 'left' | 'right'
+  targetId: string
 ): GameSnapshot {
   const pending = snap.pending
   if (!pending || pending.kind !== 'swap') throw new Error('não há troca agora')
@@ -367,16 +360,18 @@ function applySwap(
   const me = snap.seats[idx]
   if (handIdx < 0 || handIdx >= me.hand.length)
     throw new Error('carta inválida')
-  const neighbor = snap.seats[neighborIdx(snap, idx, dir)]
-  if (neighbor.hand.length === 0) throw new Error('vizinho sem cartas')
+  const otherIdx = seatIdx(snap, targetId)
+  if (otherIdx === -1 || otherIdx === idx) throw new Error('alvo inválido')
+  const other = snap.seats[otherIdx]
+  if (other.hand.length === 0) throw new Error('jogador sem cartas')
   // Deterministic pick of the returned card (host is the single writer).
   const rng = mulberry32(
     (snap.seed ^ (snap.round * 1009 + swap.queue.length * 31)) >>> 0
   )
   const [mine] = me.hand.splice(handIdx, 1)
-  const theirIdx = Math.floor(rng() * neighbor.hand.length)
-  const [theirs] = neighbor.hand.splice(theirIdx, 1)
-  neighbor.hand.push(mine)
+  const theirIdx = Math.floor(rng() * other.hand.length)
+  const [theirs] = other.hand.splice(theirIdx, 1)
+  other.hand.push(mine)
   me.hand.push(theirs)
   logEntry(snap, me, 'trocou', mine)
   swap.queue.shift()
@@ -386,9 +381,7 @@ function applySwap(
     const head = snap.seats[headIdx]
     const can =
       head.hand.length > 0 &&
-      (['left', 'right'] as const).some(
-        (d) => snap.seats[neighborIdx(snap, headIdx, d)].hand.length > 0
-      )
+      snap.seats.some((s, i) => i !== headIdx && s.hand.length > 0)
     if (can) break
     swap.queue.shift()
   }

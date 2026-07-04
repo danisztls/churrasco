@@ -165,7 +165,7 @@ export type Move =
   /** Amigo Secreto: choose a hand card to gift to the next seat. */
   | { type: 'event-gift'; handIdx: number }
   /** Álbum da Copa: give a chosen card to a neighbor, get a random one back. */
-  | { type: 'event-swap'; handIdx: number; dir: 'left' | 'right' }
+  | { type: 'event-swap'; handIdx: number; target: string }
   /** As Sobras de Ontem: after taking, choose a hand card for the pile. */
   | { type: 'event-give'; handIdx: number }
 

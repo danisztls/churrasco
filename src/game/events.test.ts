@@ -202,7 +202,7 @@ describe('amigo secreto', () => {
 })
 
 describe('álbum da copa', () => {
-  it('swaps in table order: chosen card out, random neighbor card in', () => {
+  it('swaps in table order: chosen card out, random card from the target in', () => {
     let snap = gameWithEvent('album-copa')
     expect(snap.pending?.kind).toBe('swap')
     if (snap.pending?.kind !== 'swap') throw new Error('unreachable')
@@ -211,16 +211,18 @@ describe('álbum da copa', () => {
     const headId = snap.pending.queue[0]
     const headIdx = snap.seats.findIndex((s) => s.id === headId)
     const myCard = snap.seats[headIdx].hand[0].id
-    const move = legalMoves(snap, headId).find(
+    const swaps = legalMoves(snap, headId).filter(
       (m): m is Move & { type: 'event-swap' } => m.type === 'event-swap'
-    )!
-    const neighborIdx =
-      move.dir === 'left' ? (headIdx + 2) % 3 : (headIdx + 1) % 3
-    const neighborCard = snap.seats[neighborIdx].hand[0].id
+    )
+    // Every other player with cards is a target (any seat, not just neighbors).
+    expect(new Set(swaps.map((m) => m.target)).size).toBe(2)
+    const move = swaps[0]
+    const otherIdx = snap.seats.findIndex((s) => s.id === move.target)
+    const otherCard = snap.seats[otherIdx].hand[0].id
 
     snap = applyMove(snap, headId, move)
-    expect(snap.seats[headIdx].hand.map((c) => c.id)).toEqual([neighborCard])
-    expect(snap.seats[neighborIdx].hand.map((c) => c.id)).toEqual([myCard])
+    expect(snap.seats[headIdx].hand.map((c) => c.id)).toEqual([otherCard])
+    expect(snap.seats[otherIdx].hand.map((c) => c.id)).toEqual([myCard])
 
     // Remaining two players swap; then the round starts normally.
     for (let i = 0; i < 2; i++) {

@@ -41,7 +41,7 @@ export function botMove(
   const reveals = moves.filter((m) => m.type === 'reveal')
   if (reveals.length > 0) return pick(reveals)
 
-  // Event phases: shed the least valuable card (dir of a swap is arbitrary).
+  // Event phases: shed the least valuable card (swap target is arbitrary).
   const handMoves = moves.filter(
     (m) =>
       m.type === 'event-discard' ||

@@ -9,7 +9,7 @@ export interface CardMeta {
   kind: string
 }
 
-const CORTE_META: Record<Corte, { emoji: string; name: string }> = {
+export const CORTE_META: Record<Corte, { emoji: string; name: string }> = {
   picanha: { emoji: '🥩', name: 'Picanha' },
   costela: { emoji: '🍖', name: 'Costela' },
   fraldinha: { emoji: '🥓', name: 'Fraldinha' },
@@ -17,14 +17,14 @@ const CORTE_META: Record<Corte, { emoji: string; name: string }> = {
   'coxao-duro': { emoji: '🦴', name: 'Coxão Duro' }
 }
 
-const BEBIDA_META: Record<Bebida, { emoji: string; name: string }> = {
+export const BEBIDA_META: Record<Bebida, { emoji: string; name: string }> = {
   cerveja: { emoji: '🍺', name: 'Cerveja' },
   guarana: { emoji: '🥤', name: 'Guaraná' },
   suco: { emoji: '🧃', name: 'Suco' },
   caipirinha: { emoji: '🍹', name: 'Caipirinha' }
 }
 
-const ACOMP_META: Record<Acomp, { emoji: string; name: string }> = {
+export const ACOMP_META: Record<Acomp, { emoji: string; name: string }> = {
   vinagrete: { emoji: '🍅', name: 'Vinagrete' },
   arroz: { emoji: '🍚', name: 'Arroz' },
   'feijao-tropeiro': { emoji: '🫘', name: 'Feijão Tropeiro' },

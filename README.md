@@ -54,10 +54,11 @@ _Não Alimente os Animais_ (todos descartam 1), _Amigo Secreto_ (todos passam
 ## Interpretações de regra (decisões digitais, mude em `config.ts`/`events.ts`)
 
 1. **Anti-trava**: passar só é permitido enquanto houver carta virada para
-   baixo; com tudo revelado, é obrigatório pegar. A troca do abacaxi fica fora
-   da trava — cada troca gasta um abacaxi da mão, então não estica a rodada ao
-   infinito (trocar abacaxi por abacaxi é proibido) — e só _Depois Acaba_ a
-   bloqueia. Sob _Churrasqueiro Profissa_ a rodada vira um draft aberto.
+   baixo; com tudo revelado, é obrigatório pegar. O abacaxi é **ação grátis**,
+   fora da trava: troque (uma vez por abacaxi na mão) e ainda pegue ou passe no
+   mesmo turno. Trocar abacaxi por abacaxi é proibido; só _Depois Acaba_
+   bloqueia a troca. Sob _Churrasqueiro Profissa_ a rodada vira um draft
+   aberto.
 2. **Virada automática**: revelar a próxima carta fechada não é decisão, então
    o motor vira sozinho na abertura de cada turno. Exceção: _Depois Acaba_,
    onde virar É o turno (vire-e-leve) e continua sendo ação do jogador.
@@ -68,8 +69,9 @@ _Não Alimente os Animais_ (todos descartam 1), _Amigo Secreto_ (todos passam
 5. **7 acompanhamentos distintos** valem o teto da tabela (25).
 6. **Mãos ocultas** dos rivais na UI (contagem de cartas e de bebidas é
    pública — a corrida da gelada precisa ser visível).
-7. **Álbum da Copa**: você escolhe a carta que dá e o vizinho; a carta que
-   recebe é aleatória (mãos são ocultas). Resolve em ordem de mesa.
+7. **Álbum da Copa**: você escolhe a carta que dá e o alvo — qualquer jogador,
+   não só vizinhos; a carta que recebe é aleatória (mãos são ocultas). Resolve
+   em ordem de mesa.
 8. **Brinde!** desempata por mais cartas de carne; persistindo, ordem da mesa.
 9. **Abre a Boquinha**: a carta comprada vai ao vizinho seguinte na ordem; a
    ordem de chegada na mão do vizinho conta para o pão-de-alho dele.

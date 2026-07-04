@@ -138,6 +138,11 @@ describe('anti-stall rule', () => {
     expect(me.tookThisRound).toBe(false)
     expect(me.hand.some((c) => c.kind === 'abacaxi')).toBe(false)
     expect(next.buffet[1].card.kind).toBe('abacaxi')
+    // Free action: still the same player's turn — take in the same turn.
+    expect(next.turnSeat).toBe(snap.turnSeat)
+    expect(next.turnStep).toBe('act')
+    const after = applyMove(next, seat.id, { type: 'take', slot: 2 })
+    expect(after.seats.find((s) => s.id === seat.id)!.tookThisRound).toBe(true)
   })
 })
 
