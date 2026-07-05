@@ -121,28 +121,6 @@ export function Table() {
   return (
     <div className="screen table">
       <div className="table-main">
-        <header className="table-header">
-          <span>Rodada {game.round}</span>
-          <span className="muted">monte: {game.deck.length}</span>
-        </header>
-
-        {ev && (
-          <div className="event-banner">
-            <span className="event-emoji">{ev.emoji}</span>
-            <span>
-              <strong>{ev.name}</strong>
-              <br />
-              <span className="muted">{ev.desc}</span>
-            </span>
-          </div>
-        )}
-
-        <div
-          className={`banner ${myTurn || handMoves.length > 0 ? 'banner-mine' : ''}`}
-        >
-          {banner}
-        </div>
-
         <ul className="players-strip">
           {game.seats.map((seat, i) => (
             <li
@@ -173,6 +151,28 @@ export function Table() {
             </li>
           ))}
         </ul>
+
+        <header className="table-header">
+          <span>Rodada {game.round}</span>
+          <span className="muted">monte: {game.deck.length}</span>
+        </header>
+
+        {ev && (
+          <div className="event-banner">
+            <span className="event-emoji">{ev.emoji}</span>
+            <span>
+              <strong>{ev.name}</strong>
+              <br />
+              <span className="event-desc">{ev.desc}</span>
+            </span>
+          </div>
+        )}
+
+        <div
+          className={`banner ${myTurn || handMoves.length > 0 ? 'banner-mine' : ''}`}
+        >
+          {banner}
+        </div>
 
         <div className="action-bar">
           {canReveal && (
