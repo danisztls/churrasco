@@ -249,12 +249,14 @@ h1 {
 .turn-timer-bar {
   position: absolute;
   inset: 0 auto 0 0;
-  background: color-mix(in srgb, var(--accent) 55%, var(--panel));
-  transition: width 0.12s linear;
+  background: color-mix(in srgb, #16a34a 40%, var(--panel));
+  transition:
+    width 0.12s linear,
+    background 0.6s ease;
 }
 
 .turn-timer-low .turn-timer-bar {
-  background: #b91c1c;
+  background: color-mix(in srgb, #b91c1c 75%, var(--panel));
 }
 
 .turn-timer-label {
