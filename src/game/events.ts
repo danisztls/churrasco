@@ -1,7 +1,11 @@
+import { CONFIG } from './config'
 import type { EventId, GameSnapshot } from './types'
 
 /**
- * Event cards. One is drawn per round from round 2 on, no repeats per game.
+ * Event cards. One is drawn per round from round 2 on, no repeats per game —
+ * except the neutral 'resenha' (no-op), which enters the deck in multiple
+ * copies (CONFIG.neutralEventCopies) to dilute event frequency: a fresh
+ * twist EVERY round proved overwhelming.
  * Every event is symmetric in card count (all players +1, or all net 0) so
  * hands stay in sync and the "everyone reaches 7 together" end holds.
  *
@@ -26,6 +30,13 @@ const seatsWithCards = (snap: GameSnapshot) =>
   snap.seats.filter((s) => s.hand.length > 0)
 
 export const EVENTS: Record<EventId, EventSpec> = {
+  resenha: {
+    name: 'Só resenha',
+    emoji: '😎',
+    desc: 'Rodada tranquila, sem regra especial — só o papo e a brasa.'
+    // No hooks: a normal round. Exists to dilute the event deck.
+  },
+
   'nao-alimente': {
     name: 'Não alimente os animais',
     emoji: '🚫',
@@ -190,3 +201,10 @@ export const EVENTS: Record<EventId, EventSpec> = {
 }
 
 export const ALL_EVENTS = Object.keys(EVENTS) as EventId[]
+
+/** The full event deck: every real event once + N copies of the neutral. */
+export function buildEventDeck(): EventId[] {
+  const deck: EventId[] = ALL_EVENTS.filter((e) => e !== 'resenha')
+  for (let i = 0; i < CONFIG.neutralEventCopies; i++) deck.push('resenha')
+  return deck
+}

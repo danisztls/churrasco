@@ -47,10 +47,14 @@ describe('newGame', () => {
     expect(snap.deck.length + snap.buffet.length).toBe(68)
   })
 
-  it('with events on, shuffles all 13 into the event deck', () => {
+  it('event deck = 13 real events + the neutral resenha copies', () => {
     const snap = newGame(PLAYERS, 1)
-    expect(snap.eventDeck).toHaveLength(13)
-    expect(new Set(snap.eventDeck).size).toBe(13)
+    expect(snap.eventDeck).toHaveLength(13 + CONFIG.neutralEventCopies)
+    // 13 distinct real events + 'resenha' as the only repeated id.
+    expect(new Set(snap.eventDeck).size).toBe(14)
+    expect(snap.eventDeck.filter((e) => e === 'resenha')).toHaveLength(
+      CONFIG.neutralEventCopies
+    )
     expect(snap.currentEvent).toBeNull() // round 1 has no event
   })
 })
@@ -154,15 +158,22 @@ describe('anti-stall rule', () => {
 })
 
 describe('carryover', () => {
-  it('leaves N leftovers (2 up, rest down) that open the next round', () => {
+  it('leaves N leftovers, ALL face-up (sobras públicas), opening the round', () => {
     let snap = newGame(PLAYERS, 7, NO_EVENTS)
     while (snap.round === 1) {
       snap = playTurn(snap, firstTake)
     }
-    // M = 2N: flips per round = 2 + N turns, so N-2 stay down; N carry over.
+    // M = 2N: N carry over, flipped face-up at round end; N new face-down,
+    // minus the round-2 opener's automatic flip.
     expect(snap.buffet).toHaveLength(6)
-    // 2 face-up carryover + the round-2 opener's automatic flip.
-    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
+    expect(snap.buffet.map((s) => s.faceUp)).toEqual([
+      true,
+      true,
+      true,
+      true,
+      false,
+      false
+    ])
   })
 
   it('rotates the start seat every round', () => {

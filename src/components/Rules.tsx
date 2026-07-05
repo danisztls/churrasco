@@ -32,8 +32,8 @@ export function Rules({ onClose }: { onClose: () => void }) {
           O buffet tem 2 cartas por jogador. Na sua vez, uma carta fechada vira
           sozinha; então <strong>pegue</strong> qualquer carta aberta (e saia da
           rodada) — ou <strong>passe</strong> e espere corte melhor. Só dá para
-          passar enquanto houver carta fechada. O que sobra abre a rodada
-          seguinte.
+          passar enquanto houver carta fechada. O que sobra vira para cima no
+          fim da rodada e abre a seguinte — todo mundo sabe o que vem.
         </p>
 
         <h3>Pontuação</h3>

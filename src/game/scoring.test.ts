@@ -80,7 +80,7 @@ describe('reference hands from the design doc (aferição rápida)', () => {
     expect(scores[0].bebidaPlacement).toBe(8)
     expect(scores[0].total).toBe(22) // 4 face + 8 + 5 + 4 + 1
     expect(scores[1].bebidaPlacement).toBe(4)
-    expect(scores[2].bebidaPlacement).toBe(-4)
+    expect(scores[2].bebidaPlacement).toBe(-2)
   })
 })
 
@@ -146,9 +146,9 @@ describe('acompanhamentos (distinct types)', () => {
 describe('pratos', () => {
   it('exact triple fires and adds on top of card values', () => {
     const s = scoreHand([carne('picanha'), acomp('farofa'), bebida('cerveja')])
-    expect(s.pratos).toEqual([{ name: 'Prato Raiz', bonus: 8 }])
-    // 5 + 1 acomp + 1 bebida + 8 prato
-    expect(s.subtotal).toBe(15)
+    expect(s.pratos).toEqual([{ name: 'Prato Raiz', bonus: 10 }])
+    // 5 + 1 acomp + 1 bebida + 10 prato
+    expect(s.subtotal).toBe(17)
   })
 
   it('one suco can serve two pratos (non-exclusive)', () => {
@@ -184,21 +184,21 @@ describe('pratos', () => {
       'Churrasco de Laje',
       'Vaca Atolada'
     ])
-    expect(s.pratosTotal).toBe(6)
+    expect(s.pratosTotal).toBe(4)
   })
 })
 
 describe('bebida placement edge cases', () => {
   it('tie for 1st splits pooled 1º+2º bonuses, floored', () => {
-    expect(bebidaPlacements([2, 2, 1])).toEqual([6, 6, -4])
+    expect(bebidaPlacements([2, 2, 1])).toEqual([6, 6, -2])
   })
 
   it('tie for last: full penalty each, no bonus leaks to them', () => {
-    expect(bebidaPlacements([3, 1, 1])).toEqual([8, -4, -4])
+    expect(bebidaPlacements([3, 1, 1])).toEqual([8, -2, -2])
   })
 
   it('middle tie splits the remaining pool', () => {
-    expect(bebidaPlacements([3, 2, 2, 1])).toEqual([8, 2, 2, -4])
+    expect(bebidaPlacements([3, 2, 2, 1])).toEqual([8, 2, 2, -2])
   })
 
   it('all equal is a wash (including all zero)', () => {

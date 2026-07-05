@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { CONFIG } from './config'
+import { CONFIG, DEFAULT_MODIFIERS } from './config'
 import { mulberry32 } from './deck'
 import { applyMove, legalMoves, newGame } from './rules'
 import type { EventId, GameSnapshot, Move } from './types'
@@ -45,6 +45,16 @@ const allCardIds = (snap: GameSnapshot) => [
   ...snap.discard.map((c) => c.id),
   ...snap.sobras.map((c) => c.id)
 ]
+
+describe('só resenha (neutro)', () => {
+  it('is a pure no-op: default modifiers, no pending phase', () => {
+    const snap = gameWithEvent('resenha')
+    expect(snap.currentEvent).toBe('resenha')
+    expect(snap.modifiers).toEqual(DEFAULT_MODIFIERS)
+    expect(snap.pending).toBeNull()
+    expect(snap.buffet).toHaveLength(CONFIG.buffetSlots(3))
+  })
+})
 
 describe('primo rico', () => {
   it('deals 2 extra buffet cards for the round', () => {
@@ -277,9 +287,9 @@ describe('as sobras de ontem', () => {
       .filter((s) => !s.faceUp)
       .map((s) => s.card.id)
     expect(snap.sobras).toHaveLength(0)
-    // The 3 pile cards enter face-down; the opener's flip opens the leftover
-    // face-down carryover first, so all 3 still-down cards are the pile.
-    expect(faceDownIds).toHaveLength(3)
+    // The 3 pile cards enter face-down after the (all face-up) carryover;
+    // the round-3 opener's flip opens the first of them, leaving 2 down.
+    expect(faceDownIds).toHaveLength(2)
     expect(snap.seats.every((s) => s.hand.length === 1)).toBe(true)
   })
 })

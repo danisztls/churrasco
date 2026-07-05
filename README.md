@@ -39,10 +39,13 @@ em produção o mínimo é 3.
   jogador da vez cair, o host joga por ele após 1,5 s (anti-deadlock).
 - `src/components/` — UI mobile-first, PT-BR, arte em emoji.
 
-## Eventos (1 por rodada, a partir da 2ª, sem repetir na partida)
+## Eventos (1 por rodada, a partir da 2ª, sem repetir — exceto o neutro)
 
 13 eventos implementados (`src/game/events.ts`), com `eventsEnabled` em
-`config.ts` para desligar. Modificadores puros: _Primo Rico_ (+2 no buffet),
+`config.ts` para desligar. O deck ainda leva 6 cópias do neutro _Só Resenha_
+(rodada sem regra especial, `neutralEventCopies`) — evento novo em TODA rodada
+pesava demais; com a diluição ~1/3 das rodadas sai tranquila. Modificadores
+puros: _Primo Rico_ (+2 no buffet),
 _Acabou o Carvão_ (−2 no buffet), _Churrasqueiro Profissa_ (tudo aberto),
 _Depois Acaba_ (vire-e-leve), _Abre a Boquinha_ (compra vai ao vizinho),
 _Os Últimos Serão os Primeiros_, _Brinde!_, _Esqueceram de Mim_,
@@ -66,7 +69,9 @@ abertas por padrão).
    o motor vira sozinho na abertura de cada turno. Exceção: _Depois Acaba_,
    onde virar É o turno (vire-e-leve) e continua sendo ação do jogador.
 3. **Empate na bebida**: empatados dividem o _pool_ das colocações que ocupam
-   (piso); empate no último não divide (−4 cada); todos iguais = lavada.
+   (piso); empate no último não divide (−2 cada); todos iguais = lavada. A
+   punição do último caiu de −4 para −2: swing demais para algo que a ordem
+   de compra da última rodada costuma decidir.
 4. **Pratos não exclusivos**: uma carta pode servir a mais de um prato
    (ex.: um suco fecha Domingo em Família e Fitness de Mentira).
 5. **7 acompanhamentos distintos** valem o teto da tabela (25).
@@ -81,6 +86,10 @@ abertas por padrão).
    ordem de chegada na mão do vizinho conta para o pão-de-alho dele.
 10. **Timer de turno**: 30 s de inatividade e a mesa joga pelo jogador da vez
     (política do bot; `turnTimeoutSec` em `config.ts`). Barra visível na UI.
+11. **Sobras públicas**: no fim da rodada as sobras viram para cima antes do
+    carryover — o que abre a próxima rodada é conhecimento comum. Motivo: a
+    simulação mostrou teto de habilidade raso (planejar não pagava); carryover
+    oculto era informação morta, aberto vira insumo de plano entre rodadas.
 
 ## Playtest solo e análise
 

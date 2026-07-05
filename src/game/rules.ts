@@ -1,6 +1,6 @@
 import { CONFIG, DEFAULT_MODIFIERS } from './config'
 import { buildShuffledDeck, mulberry32, shuffle } from './deck'
-import { ALL_EVENTS, EVENTS } from './events'
+import { buildEventDeck, EVENTS } from './events'
 import { cardLabel } from './log'
 import type {
   Card,
@@ -69,7 +69,7 @@ export function newGame(
     buffet: [],
     deck,
     modifiers: { ...DEFAULT_MODIFIERS },
-    eventDeck: events ? shuffle(ALL_EVENTS, rng) : [],
+    eventDeck: events ? shuffle(buildEventDeck(), rng) : [],
     currentEvent: null,
     pending: null,
     sobras: [],
@@ -81,7 +81,8 @@ export function newGame(
   return snap
 }
 
-/** Fills the buffet up to M = N + extra (+delta), keeping carryover face-up. */
+/** Fills the buffet up to CONFIG.buffetSlots(n) (+delta). Carryover slots
+ * arrive face-up (flipped at endRound — sobras públicas). */
 function dealRound(snap: GameSnapshot): void {
   const n = snap.seats.length
   const target = CONFIG.buffetSlots(n) + snap.modifiers.buffetDelta
@@ -430,6 +431,10 @@ function finishTurn(snap: GameSnapshot): void {
 }
 
 function endRound(snap: GameSnapshot): void {
+  // Sobras públicas: leftovers flip face-up before carrying over, so next
+  // round's carryover is common knowledge — the planning lever the sim showed
+  // was missing (hidden carryover was dead information).
+  snap.buffet.forEach((s) => (s.faceUp = true))
   if (snap.seats.every((s) => s.hand.length >= CONFIG.handSize)) {
     snap.phase = 'scored'
     return

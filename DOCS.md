@@ -90,9 +90,10 @@ Descrição base (do conceito original):
   - **Passa** (deixa pra depois): não pega nada, a vez segue.
 - Como começa com 2 reveladas e você revela mais 1, **o buffet nunca está vazio na
   sua decisão**.
-- Fim da rodada (todos compraram): as N cartas não compradas **ficam no buffet
-  como estão** (reveladas ou não) — completa-se com N novas viradas para baixo.
-  O rodízio continua: a sobra de hoje é a entrada de amanhã.
+- Fim da rodada (todos compraram): as N cartas não compradas **viram para cima
+  e ficam no buffet** (sobras públicas) — completa-se com N novas viradas para
+  baixo. O rodízio continua: a sobra de hoje é a entrada de amanhã, e todo
+  mundo sabe qual é.
 - Passar = opcionalidade estilo rodízio: aposta que vem corte melhor (e a
   recirculação faz isso pagar — ver carryover), com o risco de um rival levar a joia
   antes de a vez voltar. (Equilíbrio do passar: ver _Questões em aberto_.)
@@ -115,11 +116,19 @@ plano. Custo vigiado no playtest: sobras acumulam rejeito e os placares inflam.
 - Passar vira ganho real de informação: o cardápio afina mas nunca seca.
 
 **Carryover (regra de núcleo):** as M − N (= N) cartas não compradas ao fim da
-rodada **ficam no buffet como estão** (completa-se com N novas viradas para
-baixo). Nada é desperdiçado; cartas boas que ninguém pegou voltam — é o que faz
-"segurar pelo corte melhor" pagar ao longo do jogo (recirculação estilo rodízio).
-O evento _as sobras de ontem_ amplifica isso (jogadores também injetam cartas no
-monte). Não afeta a contagem de mãos.
+rodada **viram para cima e ficam no buffet** (completa-se com N novas viradas
+para baixo). Nada é desperdiçado; cartas boas que ninguém pegou voltam — é o que
+faz "segurar pelo corte melhor" pagar ao longo do jogo (recirculação estilo
+rodízio). O evento _as sobras de ontem_ amplifica isso (jogadores também injetam
+cartas no monte). Não afeta a contagem de mãos.
+
+**Sobras públicas (playtest digital):** o carryover virar para cima não é
+cosmético — a simulação mostrou teto de habilidade raso (nenhuma heurística de
+planejamento passou da paridade contra o guloso míope). Carryover oculto era
+informação morta; aberto, a rodada seguinte nasce com N cartas de conhecimento
+comum: dá para segurar plano ("a picanha volta"), ler o que os rivais deixaram
+e decidir passar com base no que JÁ se sabe que vem. Custo zero de regra na
+mesa física (é só não desvirar).
 
 Custo aceito: perde-se o hook "N cartas = N jogadores" — bonito, mas quebrava a
 mecânica assinatura.
@@ -206,10 +215,15 @@ topo.
 
 **Bebida (gelada):** 1 de face cada (cerveja, guaraná, suco, caipirinha — todas
 contam). No fim
-do jogo, premia colocação: **1º +8, 2º +4, último −4**. Empate nos bônus (1º/2º)
+do jogo, premia colocação: **1º +8, 2º +4, último −2**. Empate nos bônus (1º/2º)
 **divide** os pontos (arredonda para baixo); empate no último **não divide** (cada
-um leva −4). Se todos tiverem a mesma quantidade, é wash. Com 3 jogadores o 2º é o
+um leva −2). Se todos tiverem a mesma quantidade, é wash. Com 3 jogadores o 2º é o
 do meio; com 5-6, dá para esticar (3º ainda +2) se a disputa ficar rasa.
+
+A punição do último era −4 na 1ª passada; o playtest digital baixou para **−2**:
+quem fica por último em bebida raramente escolheu isso — a ordem de compra da
+última rodada costuma decidir — e −4 era swing demais para uma armadilha sem
+decisão. O pódio (+8/+4) segue intacto; só o chicote encurtou.
 
 **Abacaxi:** 0 pontos — só ferramenta. Na sua vez, **troque-o por uma carta revelada
 do buffet como ação adicional** (a troca é net 0: abacaxi sai, carta entra) — no
@@ -234,7 +248,7 @@ Sushi Go (combo _entre_ categorias, não set dentro de uma). 1ª passada:
 
 | Prato                    | Corte      | Acompanhamento  | Bebida     | Bônus        |
 | ------------------------ | ---------- | --------------- | ---------- | ------------ |
-| **Prato Raiz**           | picanha    | farofa          | cerveja    | +8           |
+| **Prato Raiz**           | picanha    | farofa          | cerveja    | +10          |
 | **Mineiro da Gema**      | costela    | feijão tropeiro | caipirinha | +6           |
 | **Domingo em Família**   | fraldinha  | arroz           | suco       | +5           |
 | **Espetinho de Esquina** | coração    | vinagrete       | guaraná    | +5           |
@@ -248,13 +262,19 @@ corrida da gelada:
 | Prato                   | Receita                                | Bônus |
 | ----------------------- | -------------------------------------- | ----- |
 | **Espetinho de Boteco** | queijo coalho + linguiça + pão de alho | +4    |
-| **Vaca Atolada**        | costela + mandioca                     | +3    |
-| **Churrasco de Laje**   | coxão duro + maionese                  | +3    |
+| **Vaca Atolada**        | costela + mandioca                     | +2    |
+| **Churrasco de Laje**   | coxão duro + maionese                  | +2    |
 
 Não muda o deck, só adiciona uma camada de objetivo. Montar o prato exato é difícil
 (3 cartas específicas de 7), daí o bônus alto — mas é mais um acelerador, cuidar de
 runaway no playtest. Dá para pontuar mais de um prato; lista expansível (mais
 pratos = mais alvos).
+
+**Rebalanço (medido na simulação):** os pratos de 2 cartas fecham **5-6× mais**
+que o Prato Raiz — a +3, o EV dos pares atropelava o do Raiz e todo mundo
+perseguia os mesmos combos baratos. Ajuste: pares caem para **+2** e o Raiz sobe
+para **+8 → +10**; com as taxas medidas os EVs ficam ~pareados (par: 2 × ~5,5r ≈
+11r; Raiz: 10r). Os triplos do meio (+4 a +6) já escalonavam bem e não mudam.
 
 ### Composição do deck (quantas de cada — 1ª passada)
 
@@ -272,8 +292,9 @@ razões de densidade importam mais que os totais.
 | Pão-de-alho     | 5      | incomum — segura o combo                                                            |
 | Abacaxi         | 4      | incomum                                                                             |
 
-**Eventos (13):** 1 cópia de cada tipo. Sem repetir na
-partida → embaralha e saca ~7-8 do topo.
+**Eventos (19):** 13 tipos × 1 cópia + 6 cópias do neutro _Só Resenha_.
+Sem repetir na partida (o neutro repete por design) → embaralha e saca ~7-8 do
+topo.
 
 Total ≈ 83 cartas (caixa pequena, ordem de grandeza do Sushi Go). Com 3-4
 jogadores usa-se o mesmo deck e vê-se uma fração menor — variedade entre partidas.
@@ -290,15 +311,27 @@ não comprar.
 
 Deck e variedade: **não se repete evento numa mesma partida** — saca-se um
 subconjunto único (~7-8) de um deck de **~12-15 tipos**, então cada jogo vê um
-elenco diferente. É a camada de replay/humor/localização. Dois trilhos de design
-para qualquer evento novo:
+elenco diferente. É a camada de replay/humor/localização.
+
+**Diluição (playtest digital):** um evento diferente em TODA rodada pesava —
+cansaço de regra nova atrás de regra nova. O deck ganhou **6 cópias do neutro
+_Só Resenha_** (rodada sem regra especial): ~1/3 das rodadas sai tranquila, e o
+evento que vem depois de uma rodada quieta volta a ter impacto. Alavanca:
+`neutralEventCopies` em `config.ts`; na mesa física, é literalmente 6 cartas a
+mais no deck de eventos.
+
+Dois trilhos de design para qualquer evento novo:
 
 - resolve no início da rodada;
 - **simétrico na contagem de cartas** (todos +1 ou todos net-0) — preserva o fim
   "todos com 7 juntos". Pode mexer em _quais_ cartas, ordem, informação; não pode
   fazer a contagem divergir entre jogadores.
 
-Deck atual (13 tipos, saca ~7-8 por jogo):
+Deck atual (13 tipos + o neutro, saca ~7-8 por jogo):
+
+**Neutro (várias cópias — diluição):**
+
+- _Só Resenha_ — rodada tranquila, sem regra especial; só o papo e a brasa.
 
 **Perda / caos (raros, alto swing):**
 

@@ -30,7 +30,10 @@ export const CONFIG = {
    * original was (n) => n + 2.
    */
   buffetSlots: (n: number): number => n * 2,
-  /** Cards already face-up at round start (carryover feeds this from round 2). */
+  /**
+   * Cards flipped face-up on a FRESH deal (round 1, or post-Rex). From round
+   * 2 the carryover arrives already face-up — sobras públicas, see endRound.
+   */
   faceUpAtStart: 2,
   /**
    * Anti-stall house rule (digital-only): pass and abacaxi-swap are legal only
@@ -40,6 +43,13 @@ export const CONFIG = {
   antiStallPass: true,
   /** Event cards from round 2 on (one per round, no repeats per game). */
   eventsEnabled: true,
+  /**
+   * Copies of the neutral "Só resenha" (no-event) card in the event deck.
+   * A different event EVERY round felt like too much — with 6 copies over
+   * 13 real events, ~1/3 of the drawn rounds come up quiet. 0 restores an
+   * event every round.
+   */
+  neutralEventCopies: 6,
   /** Seconds a connected player gets before the table plays for them. */
   turnTimeoutSec: 30,
 
@@ -82,8 +92,12 @@ export const CONFIG = {
    * append a 2 here to enable it.
    */
   bebidaPlacementBonus: [8, 4],
-  /** Penalty for the fewest bebidas (each tied player takes it in full). */
-  bebidaLastPenalty: -4,
+  /**
+   * Penalty for the fewest bebidas (each tied player takes it in full).
+   * Softened from the doc's -4: last place is often decided by draw order in
+   * the final round, not by choice — too much swing for a trap.
+   */
+  bebidaLastPenalty: -2,
 
   paoDeAlhoCopies: 5,
   abacaxiCopies: 4,
@@ -94,12 +108,14 @@ export const CONFIG = {
    * several pratos). The first 5 are the doc's "1ª passada" triples; the last
    * 3 are digital-playtest additions with varied shapes and no bebida (they
    * give the orphan acomps an identity without deepening the bebida race).
+   * Rebalance (sim-driven): 2-card pratos fire 5-6x more often than Raiz, so
+   * pairs dropped to +2 and Raiz rose to +10 to bring the EVs to rough parity.
    */
   pratos: [
     {
       name: 'Prato Raiz',
       reqs: [carne('picanha'), acomp('farofa'), bebida('cerveja')],
-      bonus: 8
+      bonus: 10
     },
     {
       name: 'Mineiro da Gema',
@@ -129,12 +145,12 @@ export const CONFIG = {
     {
       name: 'Vaca Atolada',
       reqs: [carne('costela'), acomp('mandioca')],
-      bonus: 3
+      bonus: 2
     },
     {
       name: 'Churrasco de Laje',
       reqs: [carne('coxao-duro'), acomp('maionese')],
-      bonus: 3
+      bonus: 2
     }
   ] as PratoSpec[]
 }

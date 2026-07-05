@@ -54,6 +54,7 @@ export interface PlayerSeat {
 }
 
 export type EventId =
+  | 'resenha'
   | 'nao-alimente'
   | 'ultimos-primeiros'
   | 'brinde'
