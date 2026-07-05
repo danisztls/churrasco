@@ -54,7 +54,6 @@ export interface PlayerSeat {
 }
 
 export type EventId =
-  | 'fogo'
   | 'nao-alimente'
   | 'ultimos-primeiros'
   | 'brinde'
@@ -153,8 +152,6 @@ export type LogAction =
   | 'presenteou'
   | 'trocou'
   | 'sobras'
-  /** Tá Pegando Fogo: the whole buffet burned (seat = 'mesa'). */
-  | 'queimou'
 
 export interface LogEntry {
   round: number
@@ -173,7 +170,7 @@ export type Move =
   | { type: 'reveal' }
   | { type: 'take'; slot: number }
   | { type: 'pass' }
-  /** Swap an abacaxi from hand with the face-up card at `slot`, then pass. */
+  /** Free action: swap a hand abacaxi with the face-up card at `slot`. */
   | { type: 'abacaxi'; slot: number }
   /** Não Alimente os Animais: choose a hand card to discard. */
   | { type: 'event-discard'; handIdx: number }

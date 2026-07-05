@@ -9,7 +9,8 @@ import type { EventId, GameSnapshot } from './types'
  * - preDeal: set RoundModifiers before the buffet is (re)filled.
  * - postDeal: immediate effects after the buffet is ready — override the
  *   starting seat, set up a pending interaction phase, or burn the round.
- *   Return 'round-lost' to skip the round entirely (Tá Pegando Fogo).
+ *   Return 'round-lost' to skip the round entirely (no stock event uses it
+ *   since Tá Pegando Fogo was cut; kept as API for custom events).
  */
 export interface EventSpec {
   name: string
@@ -25,24 +26,6 @@ const seatsWithCards = (snap: GameSnapshot) =>
   snap.seats.filter((s) => s.hand.length > 0)
 
 export const EVENTS: Record<EventId, EventSpec> = {
-  fogo: {
-    name: 'Tá pegando fogo, bicho!',
-    emoji: '🔥',
-    desc: 'O buffet inteiro queimou. Ninguém pega nada nesta rodada.',
-    postDeal: (snap) => {
-      snap.log.push({
-        round: snap.round,
-        event: 'fogo',
-        seat: 'mesa',
-        action: 'queimou',
-        options: snap.buffet.length
-      })
-      snap.discard.push(...snap.buffet.map((s) => s.card))
-      snap.buffet = []
-      return 'round-lost'
-    }
-  },
-
   'nao-alimente': {
     name: 'Não alimente os animais',
     emoji: '🚫',

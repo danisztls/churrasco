@@ -48,8 +48,6 @@ function LogLine({ e, color }: { e: LogEntry; color?: string }) {
           {seat} pôs {card} no monte
         </>
       )
-    case 'queimou':
-      return <>o buffet pegou fogo ({e.options} cartas queimadas)</>
   }
 }
 

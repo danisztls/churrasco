@@ -130,7 +130,7 @@ function startRound(snap: GameSnapshot): void {
   }
   dealRound(snap)
   if (spec?.postDeal?.(snap) === 'round-lost') {
-    // Nobody takes; the round is burned. Safe: the burning event is unique.
+    // Nobody takes; the round is skipped (unused by stock events, kept as API).
     endRound(snap)
   }
 }

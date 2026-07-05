@@ -142,23 +142,6 @@ describe('foto pro story', () => {
   })
 })
 
-describe('tá pegando fogo, bicho!', () => {
-  it('burns the whole buffet and skips the round', () => {
-    let snap = newGame(PLAYERS, 42, { events: false })
-    snap.eventDeck = ['fogo']
-    // The burn happens atomically inside the round transition: the last take
-    // of round 1 lands directly in round 3 (round 2 never becomes playable).
-    snap = playUntil(snap, (s) => s.round >= 2)
-    expect(snap.round).toBe(3)
-    expect(snap.seats.every((s) => s.hand.length === 1)).toBe(true)
-    expect(snap.discard).toHaveLength(5) // 2 carryover + 3 dealt, all burned
-    expect(snap.buffet).toHaveLength(5)
-    // Fresh redeal: 2 at start + the opener's automatic flip.
-    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
-    expect(new Set(allCardIds(snap)).size).toBe(68)
-  })
-})
-
 describe('não alimente os animais', () => {
   it('everyone discards 1 card, then the round runs normally', () => {
     let snap = gameWithEvent('nao-alimente')
