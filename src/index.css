@@ -221,7 +221,7 @@ h1 {
   align-items: baseline;
   font-weight: 600;
   font-size: 1.15rem;
-  padding-right: 3rem; /* clear the floating ? button */
+  padding-right: 6.5rem; /* clear the floating ? and sound buttons */
 }
 
 .banner {
@@ -675,6 +675,11 @@ h1 {
   font-weight: 800;
   font-size: 1.2rem;
   cursor: pointer;
+}
+
+.fab-sound {
+  right: 4.1rem;
+  font-size: 1rem;
 }
 
 .rules-overlay {
