@@ -467,7 +467,7 @@ h1 {
   transform: translateY(-6px) scale(1.05);
   box-shadow:
     0 0 0 3px var(--card-accent),
-    0 12px 24px color-mix(in srgb, var(--card-accent) 45%, transparent);
+    0 10px 18px rgba(0, 0, 0, 0.3);
   z-index: 1;
 }
 
