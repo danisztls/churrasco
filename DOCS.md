@@ -10,7 +10,7 @@ Status: ideia em desenvolvimento. Abaixo, o que está mais ou menos firmado vs.
 propostas a discutir vs. questões em aberto.
 
 **Implementação digital para playtest remoto: `~/Dev/game/churrasco`** (web,
-Playroom Kit, 3-6 jogadores + bots; regras completas incluindo os 13 eventos;
+Playroom Kit, 3-7 jogadores + bots; regras completas incluindo os 13 eventos;
 todas as alavancas de balanço em `src/game/config.ts`; exporta CSV de decisões
 por partida). É o veículo para fechar as questões de balanceamento abaixo — as
 interpretações de regra que o digital forçou estão no README de lá.
@@ -410,7 +410,17 @@ _Foto pro Story_ saiu no playtest digital: as mãos ficaram **abertas por padrã
 
 - **Mão = coleção acumulada**, e os eventos mexem nela. Confirmado. (Evento pode
   destruir combo construído — aceito, faz parte do caos.)
-- **Nº de jogadores: 3-6.**
+- **Nº de jogadores: 3-6 firmado; 7 habilitado sob teste.** O sim de escala
+  (`scripts/sim-players.ts`, 2000 jogos/célula) mostrou que o motor aguenta 7:
+  deck 100% saudável (mãos fecham em 7, com e sem eventos — as ~12 cartas de
+  folga absorvem rodadas estendidas), sem inflação de placar (média cai leve
+  17.8, topo sobe só ~2), e o **valor do passar é break-even em TODOS os N**
+  (inclusive 3-6) — 6→7 não é um cliff da mecânica-assinatura. Custo real e
+  único: a gelada fica mais mole (29% dos assentos zeram a N=7 sob pódio [8,4]),
+  resolvido esticando o pódio para [8,4,2] (ver Pontuação). Pendências que o bot
+  não mede, só mesa humana: **downtime** (7 turnos sequenciais de mão aberta por
+  rodada) e **passar estratégico** (o bot só modela passar míope, não segurar
+  por uma carta vista chegando nas sobras públicas).
 - **Fim de jogo: todos com 7 cartas na mão.** Funciona porque todo evento é
   simétrico na contagem (todos -1, ou todos net 0) e resolve no início da rodada
   — então os jogadores chegam a 7 juntos, sem dessincronizar. Rodadas que zeram o
@@ -431,8 +441,11 @@ sorteio (ou o último que fez churrasco).
 Resta só **balanceamento** (só o playtest fixa):
 
 - Valores de pontuação (1ª passada) e densidade de cada carta no deck.
-- Ajuste da gelada por nº de jogadores (esticar colocações com 5-6); face 1 vs
-  0/pudim puro.
+- Ajuste da gelada por nº de jogadores: **pódio esticado para [8,4,2]** (o sim
+  mostrou o eixo virando "wash" com mais gente — o 3º +2 é inerte a 3 e corta o
+  meio-morto de 4 a 7). Aberto ainda: face 1 vs 0/pudim puro, e se a 7 vale
+  subir a densidade de bebida (12 cartas em 7 mãos ≈ 1.7 cada deixa o eixo
+  raso mesmo com o pódio maior).
 - Tamanho do monte quando _as sobras_ injeta cartas.
 
 ## Validação (personas sintéticas)

@@ -20,7 +20,7 @@ const pao: PratoReq = { kind: 'pao-de-alho' }
  */
 export const CONFIG = {
   minPlayers: 3,
-  maxPlayers: 6,
+  maxPlayers: 7,
   /** Game ends when every hand reaches this size. */
   handSize: 7,
   /**
@@ -87,11 +87,15 @@ export const CONFIG = {
   bebidaFace: 1,
   bebidaCopies: 12,
   /**
-   * End-game placement bonuses, best count first: 1º +8, 2º +4.
-   * With 5-6 players the doc suggests optionally stretching to 3º +2 —
-   * append a 2 here to enable it.
+   * End-game placement bonuses, best count first: 1º +8, 2º +4, 3º +2.
+   * The 3rd slot only pays when there are ≥3 players above the minimum, so it
+   * is inert at 3 players and kicks in from 4 up — the sim (sim-players.ts)
+   * showed the bebida axis going mushy as N grows (29% of seats scored 0 at
+   * N=7 under a bare [8,4]); the 3º +2 halves that dead middle at 4-5 and
+   * trims it at 6-7, and rewards more of a bigger table. Matches the doc's
+   * "stretch to 3º +2 with 5-6" note.
    */
-  bebidaPlacementBonus: [8, 4],
+  bebidaPlacementBonus: [8, 4, 2],
   /**
    * Penalty for the fewest bebidas (each tied player takes it in full).
    * Softened from the doc's -4: last place is often decided by draw order in

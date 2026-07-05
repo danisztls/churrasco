@@ -17,7 +17,8 @@ export const BOT_SEATS = [
   { id: 'bot-1', name: 'Dona Farofa', color: '#eab308' },
   { id: 'bot-2', name: 'Zé Gelada', color: '#0ea5e9' },
   { id: 'bot-3', name: 'Vizinho Folgado', color: '#22c55e' },
-  { id: 'bot-4', name: 'Cunhado', color: '#a855f7' }
+  { id: 'bot-4', name: 'Cunhado', color: '#a855f7' },
+  { id: 'bot-5', name: 'Tia do Pavê', color: '#ec4899' }
 ]
 
 /** Pursuit knobs: chance that ONE unseen copy of a needed card reaches this

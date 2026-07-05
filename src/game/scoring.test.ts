@@ -264,7 +264,8 @@ describe('bebida placement edge cases', () => {
   })
 
   it('middle tie splits the remaining pool', () => {
-    expect(bebidaPlacements([3, 2, 2, 1])).toEqual([8, 2, 2, -2])
+    // 1º +8; the two tied for 2nd split the 2º+3º pool (4+2=6) → 3 each.
+    expect(bebidaPlacements([3, 2, 2, 1])).toEqual([8, 3, 3, -2])
   })
 
   it('all equal is a wash (including all zero)', () => {

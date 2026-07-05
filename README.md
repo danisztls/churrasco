@@ -99,7 +99,7 @@ abertas por padrão).
 
 ## Playtest solo e análise
 
-- **Bots**: o anfitrião adiciona até 5 bots no lobby (política gulosa por
+- **Bots**: o anfitrião adiciona até 6 bots no lobby (política gulosa por
   delta de pontuação, `src/game/bot.ts`). Também pilotam jogadores que caírem.
 - **Log de decisões**: toda pegada/passada/escolha de evento vai para o
   snapshot; a tela final tem **Baixar log (CSV)** (rodada, evento, jogador,
@@ -108,6 +108,10 @@ abertas por padrão).
 - **Simulação**: `npx tsx scripts/sim.ts [n]` roda n partidas bot-vs-bot por
   experimento (guloso vs aleatório, guloso+ vs guloso, efeito de assento,
   variância com/sem eventos) — números para as perguntas de sorte/habilidade.
+  `scripts/sim-players.ts [n]` varre o nº de jogadores (3-7) e mede o que
+  degrada com a mesa: saúde do deck, inflação, gelada mole e valor do passar —
+  base da decisão de habilitar 7. `scripts/sim-linguica.ts` isola a curva da
+  linguiça.
 - **Regras no jogo**: botão «?» flutuante abre o "Como jogar" (gerado do
   config: pontuações, pratos e eventos sempre em dia com o balanceamento).
 
