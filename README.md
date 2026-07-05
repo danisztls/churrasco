@@ -41,16 +41,17 @@ em produção o mínimo é 3.
 
 ## Eventos (1 por rodada, a partir da 2ª, sem repetir na partida)
 
-12 eventos implementados (`src/game/events.ts`), com `eventsEnabled` em
+14 eventos implementados (`src/game/events.ts`), com `eventsEnabled` em
 `config.ts` para desligar. Modificadores puros: _Primo Rico_ (+2 no buffet),
-_Churrasqueiro Profissa_ (tudo aberto), _Foto pro Story_ (mãos abertas),
-_Depois Acaba_ (vire-e-leve), _Abre a Boquinha_ (compra vai ao vizinho),
-_Os Últimos Serão os Primeiros_, _Brinde!_, _Esqueceram de Mim_. Com
-interação: _Não Alimente os Animais_ (todos descartam 1), _Amigo Secreto_
-(todos passam 1 ao seguinte), _Álbum da Copa_ (troca com qualquer jogador),
-_As Sobras de Ontem_ (contribui 1 ao monte que semeia a próxima rodada).
-_Tá Pegando Fogo_ (rodada queimada) foi cortado no playtest digital — swing
-puro sem decisão; o hook `'round-lost'` segue no motor.
+_Acabou o Carvão_ (−2 no buffet), _Churrasqueiro Profissa_ (tudo aberto),
+_Foto pro Story_ (mãos abertas), _Depois Acaba_ (vire-e-leve), _Abre a
+Boquinha_ (compra vai ao vizinho), _Os Últimos Serão os Primeiros_,
+_Brinde!_, _Esqueceram de Mim_, _O Rex Atacou_ (come as sobras da mesa;
+buffet novo). Com interação: _Não Alimente os Animais_ (todos descartam 1),
+_Amigo Secreto_ (todos passam 1 ao seguinte), _Álbum da Copa_ (troca com
+qualquer jogador), _As Sobras de Ontem_ (contribui 1 ao monte que semeia a
+próxima rodada). _Tá Pegando Fogo_ (rodada queimada) foi cortado no playtest
+digital — swing puro sem decisão; o hook `'round-lost'` segue no motor.
 
 ## Interpretações de regra (decisões digitais, mude em `config.ts`/`events.ts`)
 

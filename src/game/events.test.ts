@@ -54,6 +54,31 @@ describe('primo rico', () => {
   })
 })
 
+describe('acabou o carvão', () => {
+  it('deals 2 fewer buffet cards and the round still resolves', () => {
+    let snap = gameWithEvent('carvao')
+    expect(snap.currentEvent).toBe('carvao')
+    expect(snap.buffet).toHaveLength(CONFIG.buffetSlots(3) - 2)
+    snap = playUntil(snap, (s) => s.round === 3)
+    // M = N: nothing carries over; round 3 opens as a fresh deal.
+    expect(snap.seats.every((s) => s.hand.length === 2)).toBe(true)
+    expect(new Set(allCardIds(snap)).size).toBe(68)
+  })
+})
+
+describe('o rex atacou', () => {
+  it('discards the carryover and opens a fresh buffet', () => {
+    const snap = gameWithEvent('rex')
+    expect(snap.currentEvent).toBe('rex')
+    // Last round's 2 leftovers were eaten by the dog.
+    expect(snap.discard).toHaveLength(2)
+    expect(snap.buffet).toHaveLength(CONFIG.buffetSlots(3))
+    // Fresh deal: 2 flipped at start + the opener's auto-flip.
+    expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
+    expect(new Set(allCardIds(snap)).size).toBe(68)
+  })
+})
+
 describe('churrasqueiro profissa', () => {
   it('reveals the whole buffet and (via anti-stall) forbids passing', () => {
     const snap = gameWithEvent('churrasqueiro')

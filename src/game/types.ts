@@ -60,12 +60,14 @@ export type EventId =
   | 'esqueceram'
   | 'depois-acaba'
   | 'primo-rico'
+  | 'carvao'
   | 'churrasqueiro'
   | 'foto-story'
   | 'amigo-secreto'
   | 'album-copa'
   | 'abre-boquinha'
   | 'sobras'
+  | 'rex'
 
 /**
  * Per-round rule modifiers, reset every round and set by the event card.

@@ -47,10 +47,10 @@ describe('newGame', () => {
     expect(snap.deck.length + snap.buffet.length).toBe(68)
   })
 
-  it('with events on, shuffles all 12 into the event deck', () => {
+  it('with events on, shuffles all 14 into the event deck', () => {
     const snap = newGame(PLAYERS, 1)
-    expect(snap.eventDeck).toHaveLength(12)
-    expect(new Set(snap.eventDeck).size).toBe(12)
+    expect(snap.eventDeck).toHaveLength(14)
+    expect(new Set(snap.eventDeck).size).toBe(14)
     expect(snap.currentEvent).toBeNull() // round 1 has no event
   })
 })

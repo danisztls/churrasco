@@ -109,6 +109,15 @@ export const EVENTS: Record<EventId, EventSpec> = {
     }
   },
 
+  carvao: {
+    name: 'Acabou o carvão',
+    emoji: '🪵',
+    desc: 'Faltou brasa: o buffet desta rodada tem 2 cartas a menos.',
+    preDeal: (snap) => {
+      snap.modifiers.buffetDelta = -2
+    }
+  },
+
   churrasqueiro: {
     name: 'Churrasqueiro profissa',
     emoji: '👨‍🍳',
@@ -173,6 +182,18 @@ export const EVENTS: Record<EventId, EventSpec> = {
     desc: 'Ao pegar sua carta, ponha 1 da mão no monte — ele vira a próxima rodada.',
     preDeal: (snap) => {
       snap.modifiers.sobrasGive = true
+    }
+  },
+
+  rex: {
+    name: 'O Rex atacou!',
+    emoji: '🐕',
+    desc: 'O cachorro comeu as sobras da mesa: a rodada abre com buffet novinho.',
+    // preDeal: the table is cleared BEFORE the refill, so dealRound sees an
+    // empty buffet and opens it like a fresh deal.
+    preDeal: (snap) => {
+      snap.discard.push(...snap.buffet.map((s) => s.card))
+      snap.buffet = []
     }
   }
 }

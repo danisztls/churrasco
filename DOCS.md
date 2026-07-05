@@ -10,7 +10,7 @@ Status: ideia em desenvolvimento. Abaixo, o que está mais ou menos firmado vs.
 propostas a discutir vs. questões em aberto.
 
 **Implementação digital para playtest remoto: `~/Dev/game/churrasco`** (web,
-Playroom Kit, 3-6 jogadores + bots; regras completas incluindo os 12 eventos;
+Playroom Kit, 3-6 jogadores + bots; regras completas incluindo os 14 eventos;
 todas as alavancas de balanço em `src/game/config.ts`; exporta CSV de decisões
 por partida). É o veículo para fechar as questões de balanceamento abaixo — as
 interpretações de regra que o digital forçou estão no README de lá.
@@ -270,7 +270,7 @@ razões de densidade importam mais que os totais.
 | Pão-de-alho     | 5      | incomum — segura o combo                                                            |
 | Abacaxi         | 4      | incomum                                                                             |
 
-**Eventos (12):** 1 cópia de cada tipo. Sem repetir na
+**Eventos (14):** 1 cópia de cada tipo. Sem repetir na
 partida → embaralha e saca ~7-8 do topo.
 
 Total ≈ 83 cartas (caixa pequena, ordem de grandeza do Sushi Go). Com 3-4
@@ -296,11 +296,13 @@ para qualquer evento novo:
   "todos com 7 juntos". Pode mexer em _quais_ cartas, ordem, informação; não pode
   fazer a contagem divergir entre jogadores.
 
-Deck atual (12 tipos, saca ~7-8 por jogo):
+Deck atual (14 tipos, saca ~7-8 por jogo):
 
 **Perda / caos (raros, alto swing):**
 
 - _Não alimente os animais_ — todos descartam 1 carta da mão.
+- _O Rex atacou!_ — o cachorro come as sobras da mesa (o carryover é descartado);
+  a rodada abre com buffet todo novo. Versão domada do evento dropado.
 
 **Procedimento / ordem:**
 
@@ -318,6 +320,8 @@ Deck atual (12 tipos, saca ~7-8 por jogo):
 **Buffet (tamanho):**
 
 - _Primo Rico_ — buffet com 2 cartas a mais (M+2): fartura, escolha sobrando.
+- _Acabou o carvão_ — buffet com 2 cartas a menos (M = N): escassez, passar fica
+  arriscado e os últimos pegam o que restou. Espelho do Primo Rico.
 
 **Informação:**
 
@@ -338,10 +342,11 @@ Deck atual (12 tipos, saca ~7-8 por jogo):
   o carryover de núcleo).
 
 Dropados: _fura-fila_ (sortear é trabalhoso), _caiu na brasa_ (sem graça),
-_rodízio_ (redundante com o amigo secreto), _O Rex atacou_, _Anfitrião pão-duro_ e
+_rodízio_ (redundante com o amigo secreto), _Anfitrião pão-duro_ e
 _Aqui não é uma democracia_ (cortes do dono — humor/swing, por hora);
 _tá pegando fogo, bicho!_ (cortado no playtest digital: swing puro sem nenhuma
 decisão, a rodada se resolve sozinha; a expressão fica como gíria da marca).
+_O Rex atacou_ voltou em versão domada (come só as sobras da mesa).
 
 ## Resolvido
 
