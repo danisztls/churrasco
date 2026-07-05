@@ -161,12 +161,6 @@ describe('esqueceram de mim', () => {
   })
 })
 
-describe('foto pro story', () => {
-  it('sets the open-hands modifier', () => {
-    expect(gameWithEvent('foto-story').modifiers.openHands).toBe(true)
-  })
-})
-
 describe('não alimente os animais', () => {
   it('everyone discards 1 card, then the round runs normally', () => {
     let snap = gameWithEvent('nao-alimente')

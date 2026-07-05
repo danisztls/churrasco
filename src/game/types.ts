@@ -62,7 +62,6 @@ export type EventId =
   | 'primo-rico'
   | 'carvao'
   | 'churrasqueiro'
-  | 'foto-story'
   | 'amigo-secreto'
   | 'album-copa'
   | 'abre-boquinha'
@@ -81,8 +80,6 @@ export interface RoundModifiers {
   revealAll: boolean
   /** Os Últimos Serão os Primeiros: reversed turn order this round. */
   reversed: boolean
-  /** Foto pro Story: all hands visible this round. */
-  openHands: boolean
   /** Depois Acaba: revealing a card takes it immediately (flip-and-take). */
   forcedTake: boolean
   /** Abre a Boquinha: the card you take goes to the next seat's hand. */

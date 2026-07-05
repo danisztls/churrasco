@@ -10,7 +10,7 @@ Status: ideia em desenvolvimento. Abaixo, o que está mais ou menos firmado vs.
 propostas a discutir vs. questões em aberto.
 
 **Implementação digital para playtest remoto: `~/Dev/game/churrasco`** (web,
-Playroom Kit, 3-6 jogadores + bots; regras completas incluindo os 14 eventos;
+Playroom Kit, 3-6 jogadores + bots; regras completas incluindo os 13 eventos;
 todas as alavancas de balanço em `src/game/config.ts`; exporta CSV de decisões
 por partida). É o veículo para fechar as questões de balanceamento abaixo — as
 interpretações de regra que o digital forçou estão no README de lá.
@@ -272,7 +272,7 @@ razões de densidade importam mais que os totais.
 | Pão-de-alho     | 5      | incomum — segura o combo                                                            |
 | Abacaxi         | 4      | incomum                                                                             |
 
-**Eventos (14):** 1 cópia de cada tipo. Sem repetir na
+**Eventos (13):** 1 cópia de cada tipo. Sem repetir na
 partida → embaralha e saca ~7-8 do topo.
 
 Total ≈ 83 cartas (caixa pequena, ordem de grandeza do Sushi Go). Com 3-4
@@ -298,7 +298,7 @@ para qualquer evento novo:
   "todos com 7 juntos". Pode mexer em _quais_ cartas, ordem, informação; não pode
   fazer a contagem divergir entre jogadores.
 
-Deck atual (14 tipos, saca ~7-8 por jogo):
+Deck atual (13 tipos, saca ~7-8 por jogo):
 
 **Perda / caos (raros, alto swing):**
 
@@ -329,8 +329,6 @@ Deck atual (14 tipos, saca ~7-8 por jogo):
 
 - _Churrasqueiro profissa_ — todo o buffet revelado no início (draft de info
   perfeita).
-- _Foto pro Story_ — todos com a mão aberta nesta rodada (info das coleções rivais;
-  diferente do churrasqueiro, que abre o buffet). _Tentativo._
 
 **Troca / distribuição:**
 
@@ -349,6 +347,8 @@ _Aqui não é uma democracia_ (cortes do dono — humor/swing, por hora);
 _tá pegando fogo, bicho!_ (cortado no playtest digital: swing puro sem nenhuma
 decisão, a rodada se resolve sozinha; a expressão fica como gíria da marca).
 _O Rex atacou_ voltou em versão domada (come só as sobras da mesa).
+_Foto pro Story_ saiu no playtest digital: as mãos ficaram **abertas por padrão**
+(mais leitura de mesa, menos memória), o que o tornou redundante.
 
 ## Resolvido
 

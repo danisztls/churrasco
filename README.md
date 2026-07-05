@@ -41,17 +41,18 @@ em produção o mínimo é 3.
 
 ## Eventos (1 por rodada, a partir da 2ª, sem repetir na partida)
 
-14 eventos implementados (`src/game/events.ts`), com `eventsEnabled` em
+13 eventos implementados (`src/game/events.ts`), com `eventsEnabled` em
 `config.ts` para desligar. Modificadores puros: _Primo Rico_ (+2 no buffet),
 _Acabou o Carvão_ (−2 no buffet), _Churrasqueiro Profissa_ (tudo aberto),
-_Foto pro Story_ (mãos abertas), _Depois Acaba_ (vire-e-leve), _Abre a
-Boquinha_ (compra vai ao vizinho), _Os Últimos Serão os Primeiros_,
-_Brinde!_, _Esqueceram de Mim_, _O Rex Atacou_ (come as sobras da mesa;
-buffet novo). Com interação: _Não Alimente os Animais_ (todos descartam 1),
-_Amigo Secreto_ (todos passam 1 ao seguinte), _Álbum da Copa_ (troca com
-qualquer jogador), _As Sobras de Ontem_ (contribui 1 ao monte que semeia a
-próxima rodada). _Tá Pegando Fogo_ (rodada queimada) foi cortado no playtest
-digital — swing puro sem decisão; o hook `'round-lost'` segue no motor.
+_Depois Acaba_ (vire-e-leve), _Abre a Boquinha_ (compra vai ao vizinho),
+_Os Últimos Serão os Primeiros_, _Brinde!_, _Esqueceram de Mim_,
+_O Rex Atacou_ (come as sobras da mesa; buffet novo). Com interação:
+_Não Alimente os Animais_ (todos descartam 1), _Amigo Secreto_ (todos passam
+1 ao seguinte), _Álbum da Copa_ (troca com qualquer jogador), _As Sobras de
+Ontem_ (contribui 1 ao monte que semeia a próxima rodada). Cortados no
+playtest digital: _Tá Pegando Fogo_ (swing puro sem decisão; o hook
+`'round-lost'` segue no motor) e _Foto pro Story_ (redundante com as mãos
+abertas por padrão).
 
 ## Interpretações de regra (decisões digitais, mude em `config.ts`/`events.ts`)
 
@@ -69,14 +70,17 @@ digital — swing puro sem decisão; o hook `'round-lost'` segue no motor.
 4. **Pratos não exclusivos**: uma carta pode servir a mais de um prato
    (ex.: um suco fecha Domingo em Família e Fitness de Mentira).
 5. **7 acompanhamentos distintos** valem o teto da tabela (25).
-6. **Mãos ocultas** dos rivais na UI (contagem de cartas e de bebidas é
-   pública — a corrida da gelada precisa ser visível).
+6. **Mãos abertas**: todas as mãos são públicas na UI (decisão de playtest —
+   mais leitura de mesa, menos memória; _Foto pro Story_ ficou redundante e
+   saiu do deck de eventos).
 7. **Álbum da Copa**: você escolhe a carta que dá e o alvo — qualquer jogador,
-   não só vizinhos; a carta que recebe é aleatória (mãos são ocultas). Resolve
-   em ordem de mesa.
+   não só vizinhos; a carta que recebe é sorteada da mão dele (troca às cegas,
+   mesmo com mãos abertas). Resolve em ordem de mesa.
 8. **Brinde!** desempata por mais cartas de carne; persistindo, ordem da mesa.
 9. **Abre a Boquinha**: a carta comprada vai ao vizinho seguinte na ordem; a
    ordem de chegada na mão do vizinho conta para o pão-de-alho dele.
+10. **Timer de turno**: 30 s de inatividade e a mesa joga pelo jogador da vez
+    (política do bot; `turnTimeoutSec` em `config.ts`). Barra visível na UI.
 
 ## Playtest solo e análise
 

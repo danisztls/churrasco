@@ -40,6 +40,8 @@ export const CONFIG = {
   antiStallPass: true,
   /** Event cards from round 2 on (one per round, no repeats per game). */
   eventsEnabled: true,
+  /** Seconds a connected player gets before the table plays for them. */
+  turnTimeoutSec: 30,
 
   /** Face value per corte (pirâmide invertida: raro = alto). */
   cortePoints: {
@@ -160,7 +162,6 @@ export const DEFAULT_MODIFIERS: RoundModifiers = {
   passAllowed: true,
   revealAll: false,
   reversed: false,
-  openHands: false,
   forcedTake: false,
   takeToNeighbor: false,
   sobrasGive: false,

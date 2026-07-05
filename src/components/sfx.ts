@@ -1,7 +1,9 @@
 /**
  * Tiny Web Audio synth for game feedback — every sound is generated from
- * oscillators, no audio assets. Volumes are gentle by design; the master
- * mute persists in localStorage.
+ * oscillators, no audio assets. Timbre notes: each tone is TWO slightly
+ * detuned oscillators through a lowpass filter with a soft attack, which
+ * reads "warm marimba-ish" instead of sharp chiptune. The master mute
+ * persists in localStorage.
  */
 
 let ctx: AudioContext | null = null
@@ -17,7 +19,7 @@ function ensure(): { ctx: AudioContext; master: GainNode } | null {
   if (!ctx) {
     ctx = new AudioContext()
     master = ctx.createGain()
-    master.gain.value = 0.2
+    master.gain.value = 0.18
     master.connect(ctx.destination)
   }
   // Browsers gate audio behind a user gesture; by the time game sounds fire
@@ -35,72 +37,84 @@ export function setMuted(v: boolean): void {
   localStorage.setItem(STORAGE_KEY, v ? '1' : '0')
 }
 
-/** One enveloped oscillator note, `at` seconds from now. */
-function note(
+/** One warm enveloped tone, `at` seconds from now. */
+function tone(
   freq: number,
   at: number,
   dur: number,
-  type: OscillatorType = 'sine',
-  vol = 1
+  opts: { type?: OscillatorType; vol?: number; attack?: number } = {}
 ): void {
   const a = ensure()
   if (!a) return
+  const { type = 'triangle', vol = 1, attack = 0.03 } = opts
   const t = a.ctx.currentTime + at
-  const osc = a.ctx.createOscillator()
+
+  const filter = a.ctx.createBiquadFilter()
+  filter.type = 'lowpass'
+  filter.frequency.setValueAtTime(freq * 3, t)
+  filter.Q.value = 0.6
+
   const gain = a.ctx.createGain()
-  osc.type = type
-  osc.frequency.setValueAtTime(freq, t)
   gain.gain.setValueAtTime(0, t)
-  gain.gain.linearRampToValueAtTime(vol, t + 0.012)
+  gain.gain.linearRampToValueAtTime(vol, t + attack)
   gain.gain.exponentialRampToValueAtTime(0.001, t + dur)
-  osc.connect(gain)
+
+  // Two detuned voices — the slow beating rounds the tone off.
+  for (const f of [freq, freq * 1.007]) {
+    const osc = a.ctx.createOscillator()
+    osc.type = type
+    osc.frequency.setValueAtTime(f, t)
+    osc.connect(filter)
+    osc.start(t)
+    osc.stop(t + dur + 0.03)
+  }
+  filter.connect(gain)
   gain.connect(a.master)
-  osc.start(t)
-  osc.stop(t + dur + 0.02)
 }
 
 export const SFX = {
-  /** Sua vez: two rising notes, hard to miss even alt-tabbed. */
+  /** Sua vez: rising major arpeggio, long enough to register alt-tabbed. */
   yourTurn(): void {
     if (muted) return
-    note(660, 0, 0.12, 'triangle', 0.9)
-    note(880, 0.11, 0.24, 'triangle', 0.9)
+    tone(523, 0, 0.35, { vol: 0.55 })
+    tone(659, 0.16, 0.35, { vol: 0.6 })
+    tone(784, 0.32, 0.6, { vol: 0.65 })
   },
-  /** Own action confirmed: short thock. */
+  /** Own action confirmed: rounded low tap. */
   action(): void {
     if (muted) return
-    note(320, 0, 0.09, 'square', 0.45)
+    tone(240, 0, 0.12, { type: 'sine', vol: 0.5, attack: 0.012 })
   },
-  /** A rival acted: soft tick, keeps the table alive in the background. */
+  /** A rival acted: tiny soft blip in the background. */
   tick(): void {
     if (muted) return
-    note(520, 0, 0.05, 'sine', 0.22)
+    tone(480, 0, 0.06, { type: 'sine', vol: 0.14, attack: 0.01 })
   },
-  /** Round over: three-note descending resolve. */
+  /** Round over: quiet low fifth — a page turn, not an alarm. */
   roundEnd(): void {
     if (muted) return
-    note(587, 0, 0.12, 'triangle', 0.7)
-    note(494, 0.12, 0.12, 'triangle', 0.7)
-    note(392, 0.24, 0.3, 'triangle', 0.7)
+    tone(262, 0, 0.3, { type: 'sine', vol: 0.32 })
+    tone(392, 0.1, 0.42, { type: 'sine', vol: 0.26 })
   },
-  /** Event card revealed: dissonant little sting. */
+  /** Event card revealed: slow minor swell, drama without harshness. */
   event(): void {
     if (muted) return
-    note(220, 0, 0.42, 'sawtooth', 0.4)
-    note(233, 0.02, 0.42, 'sawtooth', 0.32)
+    tone(220, 0, 0.7, { vol: 0.3, attack: 0.16 })
+    tone(262, 0.04, 0.7, { vol: 0.24, attack: 0.16 })
+    tone(330, 0.08, 0.7, { vol: 0.2, attack: 0.16 })
   },
-  /** Prato completed: rising arpeggio — the reward moment. */
+  /** Prato completed: warm rising arpeggio — the reward moment. */
   prato(): void {
     if (muted) return
     ;[523, 659, 784, 1047].forEach((f, i) =>
-      note(f, i * 0.09, i === 3 ? 0.3 : 0.16, 'triangle', 0.8)
+      tone(f, i * 0.11, i === 3 ? 0.5 : 0.28, { vol: 0.5 })
     )
   },
   /** Game over: little fanfare into the scoreboard. */
   gameOver(): void {
     if (muted) return
     ;[392, 523, 659, 784].forEach((f, i) =>
-      note(f, i * 0.13, i === 3 ? 0.55 : 0.15, 'square', 0.4)
+      tone(f, i * 0.15, i === 3 ? 0.8 : 0.3, { vol: 0.45 })
     )
   }
 }

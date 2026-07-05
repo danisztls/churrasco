@@ -174,6 +174,8 @@ export function Table() {
           {banner}
         </div>
 
+        <TurnTimer game={game} />
+
         <div className="action-bar">
           {canReveal && (
             <button
@@ -305,21 +307,50 @@ export function Table() {
           <p className="muted">Você entrou no meio do jogo — assistindo.</p>
         )}
 
-        {game.modifiers.openHands && (
-          <div className="reveal-hands">
-            {game.seats
-              .filter((s) => s.id !== me.id)
-              .map((seat) => (
-                <Hand
-                  key={seat.id}
-                  cards={seat.hand}
-                  title={`📸 ${seat.name}`}
-                />
-              ))}
-          </div>
-        )}
+        <div className="reveal-hands">
+          {game.seats
+            .filter((s) => s.id !== me.id)
+            .map((seat) => (
+              <Hand
+                key={seat.id}
+                cards={seat.hand}
+                title={`${seat.name} (${seat.hand.length}/7)`}
+              />
+            ))}
+        </div>
       </div>
       <GameLog game={game} />
+    </div>
+  )
+}
+
+/** Client-side view of the host's inactivity clock: any snapshot change
+ * re-arms both, so the countdown mirrors when the table will auto-play.
+ * Rendered as a standalone progress bar for visibility. */
+function TurnTimer({ game }: { game: GameSnapshot }) {
+  const totalMs = CONFIG.turnTimeoutSec * 1000
+  const [leftMs, setLeftMs] = useState(totalMs)
+  useEffect(() => {
+    setLeftMs(totalMs)
+    const started = Date.now()
+    const iv = setInterval(
+      () => setLeftMs(Math.max(0, totalMs - (Date.now() - started))),
+      100
+    )
+    return () => clearInterval(iv)
+  }, [game, totalMs])
+  const secs = Math.ceil(leftMs / 1000)
+  const low = secs <= 10
+  return (
+    <div
+      className={`turn-timer${low ? ' turn-timer-low' : ''}`}
+      title="tempo até a mesa jogar pelo jogador da vez"
+    >
+      <div
+        className="turn-timer-bar"
+        style={{ width: `${(100 * leftMs) / totalMs}%` }}
+      />
+      <span className="turn-timer-label">⏱ {secs}s</span>
     </div>
   )
 }

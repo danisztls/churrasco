@@ -11,6 +11,7 @@ import {
 import type { PlayerState } from 'playroomkit'
 import React, { createContext, useCallback, useContext, useEffect } from 'react'
 import { BOT_SEATS, botMove } from '../game/bot'
+import { CONFIG } from '../game/config'
 import { applyMove, legalMoves, newGame } from '../game/rules'
 import type { GameSnapshot, Move } from '../game/types'
 
@@ -88,37 +89,52 @@ export function GameEngineProvider({
   }, [players, setGame])
 
   // Host auto-pilot: bot seats and disconnected players get their moves
-  // played by the greedy bot policy, so nothing ever deadlocks the table.
+  // played by the greedy bot after a short beat; connected humans get
+  // CONFIG.turnTimeoutSec of inactivity before the table plays for them.
+  // Any snapshot change re-arms the timer.
   useEffect(() => {
     if (!amHost || !game || game.phase !== 'playing') return
-    const unattended = game.seats.filter(
-      (seat) =>
-        !players.some((p) => p.id === seat.id) &&
-        legalMoves(game, seat.id).length > 0
+    const actors = game.seats.filter(
+      (seat) => legalMoves(game, seat.id).length > 0
     )
-    if (unattended.length === 0) return
-    const isBot = unattended.some((s) => s.id.startsWith('bot-'))
-    const timer = setTimeout(
-      () => {
-        const snap = getState('game') as GameSnapshot | null
-        if (!snap || snap.phase !== 'playing') return
-        // Never auto-play a connected human — the local player explicitly,
-        // since getParticipants() may not include self.
-        const connected = new Set([
-          myPlayer().id,
-          ...Object.keys(getParticipants())
-        ])
-        for (const seat of snap.seats) {
-          if (connected.has(seat.id)) continue
-          const move = botMove(snap, seat.id, Math.random)
-          if (move) {
-            hostApply(seat.id, move)
-            return // one per tick; the state change re-triggers this effect
-          }
+    if (actors.length === 0) return
+    const unattended = actors.filter(
+      (seat) => !players.some((p) => p.id === seat.id)
+    )
+    const timedOut = unattended.length === 0
+    const delay = timedOut
+      ? CONFIG.turnTimeoutSec * 1000
+      : unattended.some((s) => s.id.startsWith('bot-'))
+        ? 900
+        : 1500
+    const timer = setTimeout(() => {
+      const snap = getState('game') as GameSnapshot | null
+      if (!snap || snap.phase !== 'playing') return
+      // Connected set at fire time — the local player explicitly, since
+      // getParticipants() may not include self.
+      const connected = new Set([
+        myPlayer().id,
+        ...Object.keys(getParticipants())
+      ])
+      for (const seat of snap.seats) {
+        if (connected.has(seat.id)) continue
+        const move = botMove(snap, seat.id, Math.random)
+        if (move) {
+          hostApply(seat.id, move)
+          return // one per tick; the state change re-triggers this effect
         }
-      },
-      isBot ? 900 : 1500
-    )
+      }
+      // Timeout path only: everyone pending is connected but idle — play
+      // for the first of them.
+      if (!timedOut) return
+      for (const seat of snap.seats) {
+        const move = botMove(snap, seat.id, Math.random)
+        if (move) {
+          hostApply(seat.id, move)
+          return
+        }
+      }
+    }, delay)
     return () => clearTimeout(timer)
   }, [amHost, game, players, hostApply])
 

@@ -127,15 +127,6 @@ export const EVENTS: Record<EventId, EventSpec> = {
     }
   },
 
-  'foto-story': {
-    name: 'Foto pro Story',
-    emoji: '📸',
-    desc: 'Todas as mãos abertas nesta rodada.',
-    preDeal: (snap) => {
-      snap.modifiers.openHands = true
-    }
-  },
-
   'amigo-secreto': {
     name: 'Amigo secreto',
     emoji: '🎁',
