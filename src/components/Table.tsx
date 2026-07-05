@@ -21,7 +21,7 @@ function pendingActors(game: GameSnapshot): string[] {
 }
 
 export function Table() {
-  const { game, me, myMoves, dispatch } = useGameEngine()
+  const { game, players, me, myMoves, dispatch } = useGameEngine()
   const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
   const [selectedHand, setSelectedHand] = useState<number | null>(null)
 
@@ -121,37 +121,6 @@ export function Table() {
   return (
     <div className="screen table">
       <div className="table-main">
-        <ul className="players-strip">
-          {game.seats.map((seat, i) => (
-            <li
-              key={seat.id}
-              className={[
-                'player-chip',
-                !game.pending && i === game.turnSeat && 'player-current',
-                game.pending &&
-                  pendingActors(game).includes(seat.id) &&
-                  'player-current',
-                seat.tookThisRound && 'player-done'
-              ]
-                .filter(Boolean)
-                .join(' ')}
-            >
-              <span className="dot" style={{ background: seat.color }} />
-              <span className="player-name">
-                {seat.name}
-                {seat.id === me.id ? ' (você)' : ''}
-              </span>
-              <span className="muted">
-                🃏{seat.hand.length} · 🍺
-                {seat.hand.filter((c) => c.kind === 'bebida').length}
-              </span>
-              {seat.tookThisRound && (
-                <span title="já pegou nesta rodada">✓</span>
-              )}
-            </li>
-          ))}
-        </ul>
-
         <header className="table-header">
           <span>Rodada {game.round}</span>
           <span className="muted">monte: {game.deck.length}</span>
@@ -289,7 +258,7 @@ export function Table() {
         </div>
 
         {mySeat ? (
-          <>
+          <div className="seat-block">
             <Hand
               cards={mySeat.hand}
               title={`Sua mão (${mySeat.hand.length}/7)`}
@@ -300,9 +269,7 @@ export function Table() {
                 setSelectedHand(selectedHand === i ? null : i)
               }}
             />
-            <ScoreStrip game={game} myIdx={myIdx} />
-            <PratosPanel game={game} hand={mySeat.hand} myId={me.id} />
-          </>
+          </div>
         ) : (
           <p className="muted">Você entrou no meio do jogo — assistindo.</p>
         )}
@@ -318,8 +285,73 @@ export function Table() {
               />
             ))}
         </div>
+
+        {mySeat && (
+          <PratosPanel game={game} hand={mySeat.hand} myId={me.id} />
+        )}
       </div>
-      <GameLog game={game} />
+      <aside className="table-side">
+        <ul className="players-strip">
+          {game.seats.map((seat, i) => {
+            const photo = players
+              .find((p) => p.id === seat.id)
+              ?.getProfile().photo
+            return (
+              <li
+                key={seat.id}
+                className={[
+                  'player-chip',
+                  !game.pending && i === game.turnSeat && 'player-current',
+                  game.pending &&
+                    pendingActors(game).includes(seat.id) &&
+                    'player-current',
+                  seat.tookThisRound && 'player-done'
+                ]
+                  .filter(Boolean)
+                  .join(' ')}
+              >
+                {photo ? (
+                  <img className="player-avatar" src={photo} alt="" />
+                ) : (
+                  <span
+                    className="player-avatar"
+                    style={{ background: seat.color }}
+                    aria-hidden
+                  />
+                )}
+                <div className="player-info">
+                  <div className="player-line">
+                    <span className="player-name">
+                      {seat.name}
+                      {seat.id === me.id ? ' (você)' : ''}
+                    </span>
+                    {seat.tookThisRound && (
+                      <span title="já pegou nesta rodada">✓</span>
+                    )}
+                    <span
+                      className="player-score"
+                      title="pontos se o jogo acabasse agora"
+                    >
+                      {seatTotal(game, i)}
+                    </span>
+                  </div>
+                  <div className="player-breakdown">
+                    {scoreChips(game, i)
+                      .filter((c) => !c.zero)
+                      .map((c) => (
+                        <span key={c.title} className="pb-item" title={c.title}>
+                          {c.emoji}
+                          {c.value}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+        <GameLog game={game} />
+      </aside>
     </div>
   )
 }
@@ -418,22 +450,32 @@ function PratosPanel({
   )
 }
 
-/** Live score breakdown: category chips + projected bebida placement. */
-function ScoreStrip({ game, myIdx }: { game: GameSnapshot; myIdx: number }) {
-  const seat = game.seats[myIdx]
-  const s = scoreSeat(seat, game.pratoClaims ?? [])
+/** Projected total for a seat if the game ended now: hand subtotal (incl.
+ * claimed pratos) plus the current bebida placement. Shown per player in the
+ * players-strip. */
+function seatTotal(game: GameSnapshot, seatIdx: number): number {
+  const s = scoreSeat(game.seats[seatIdx], game.pratoClaims ?? [])
   const counts = game.seats.map(
     (x) => x.hand.filter((c) => c.kind === 'bebida').length
   )
-  const placement = bebidaPlacements(counts)[myIdx]
-  const total = s.subtotal + placement
+  return s.subtotal + bebidaPlacements(counts)[seatIdx]
+}
+
+/** Per-category score chips for a seat (🥩 face, 🧄 doublings, 🌭 linguiça,
+ * 🥗 distinct acomps, 🍺 face, ⭐ pratos, 🏅 projected bebida placement).
+ * Rendered compactly under each name in the players-strip; `zero` lets callers
+ * drop empty categories to stay compact. */
+function scoreChips(
+  game: GameSnapshot,
+  seatIdx: number
+): { emoji: string; value: string; zero: boolean; title: string }[] {
+  const s = scoreSeat(game.seats[seatIdx], game.pratoClaims ?? [])
+  const counts = game.seats.map(
+    (x) => x.hand.filter((c) => c.kind === 'bebida').length
+  )
+  const placement = bebidaPlacements(counts)[seatIdx]
   const sign = (v: number) => (v > 0 ? `+${v}` : `${v}`)
-  const chips: {
-    emoji: string
-    value: string
-    zero: boolean
-    title: string
-  }[] = [
+  return [
     {
       emoji: '🥩',
       value: `${s.carne}`,
@@ -477,25 +519,6 @@ function ScoreStrip({ game, myIdx }: { game: GameSnapshot; myIdx: number }) {
       title: 'colocação da bebida se o jogo acabasse agora'
     }
   ]
-  return (
-    <div className="score-strip">
-      {chips.map((c) => (
-        <span
-          key={c.title}
-          className={`score-chip${c.zero ? ' score-zero' : ''}`}
-          title={c.title}
-        >
-          {c.emoji} {c.value}
-        </span>
-      ))}
-      <span
-        className="score-chip score-total"
-        title="total se o jogo acabasse agora"
-      >
-        ≈ {total} pts
-      </span>
-    </div>
-  )
 }
 
 function Hand({
