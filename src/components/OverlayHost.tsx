@@ -6,8 +6,8 @@ export interface Announcement {
   desc?: string
 }
 
-const SHOW_MS = 2000
-const FADE_MS = 450
+const SHOW_MS = 3200
+const FADE_MS = 500
 
 const queue: Announcement[] = []
 let poke: (() => void) | null = null
