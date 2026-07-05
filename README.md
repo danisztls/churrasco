@@ -86,6 +86,9 @@ digital — swing puro sem decisão; o hook `'round-lost'` segue no motor.
   snapshot; a tela final tem **Baixar log (CSV)** (rodada, evento, jogador,
   ação, carta, nº de opções abertas) + totais por categoria — insumo direto
   para as questões de balanço do design (passar paga? M=N+2 segura 5-6?).
+- **Simulação**: `npx tsx scripts/sim.ts [n]` roda n partidas bot-vs-bot por
+  experimento (guloso vs aleatório, guloso+ vs guloso, efeito de assento,
+  variância com/sem eventos) — números para as perguntas de sorte/habilidade.
 - **Regras no jogo**: botão «?» flutuante abre o "Como jogar" (gerado do
   config: pontuações, pratos e eventos sempre em dia com o balanceamento).
 
