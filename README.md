@@ -90,6 +90,12 @@ abertas por padrão).
     carryover — o que abre a próxima rodada é conhecimento comum. Motivo: a
     simulação mostrou teto de habilidade raso (planejar não pagava); carryover
     oculto era informação morta, aberto vira insumo de plano entre rodadas.
+12. **Pratos são corrida**: só o PRIMEIRO a juntar a receita leva o bônus. A
+    reivindicação acontece no instante em que a última carta entra na mão
+    (fica no log, ação `prato`) e é permanente — perder uma peça depois, por
+    evento, não desfaz. Completar receita que outro já levou não vale nada.
+    Completamentos simultâneos (presentes/trocas de evento) resolvem na ordem
+    da mesa a partir de quem abre a rodada, com prioridade para quem agiu.
 
 ## Playtest solo e análise
 

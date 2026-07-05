@@ -48,6 +48,13 @@ function LogLine({ e, color }: { e: LogEntry; color?: string }) {
           {seat} pôs {card} no monte
         </>
       )
+    case 'prato':
+      // e.card carries the prato NAME here, not a card label.
+      return (
+        <>
+          {seat} levou o prato <strong>⭐ {e.card}</strong>
+        </>
+      )
   }
 }
 

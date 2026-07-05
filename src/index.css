@@ -852,6 +852,19 @@ h1 {
   font-weight: 700;
 }
 
+/* Claimed by a rival: out of the race, visually dead. */
+.prato-taken {
+  opacity: 0.45;
+}
+
+.prato-taken .prato-name {
+  text-decoration: line-through;
+}
+
+.prato-taken .prato-status {
+  color: #f87171;
+}
+
 /* ---- center-screen overlay notices ---- */
 
 .overlay-note {

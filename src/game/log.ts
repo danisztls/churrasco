@@ -32,7 +32,7 @@ export function logToCsv(snap: GameSnapshot): string {
     )
   }
   if (snap.phase === 'scored') {
-    for (const s of scoreGame(snap.seats)) {
+    for (const s of scoreGame(snap.seats, snap.pratoClaims)) {
       rows.push(
         [
           snap.round,

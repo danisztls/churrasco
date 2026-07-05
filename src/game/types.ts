@@ -91,6 +91,16 @@ export interface RoundModifiers {
   lastSeat: number | null
 }
 
+/** A prato taken in the race: only the FIRST hand to complete the recipe
+ * scores it. Permanent — losing a piece later does not revoke the claim. */
+export interface PratoClaim {
+  /** Prato name (key into CONFIG.pratos). */
+  name: string
+  /** Seat id of the claimant. */
+  seat: string
+  round: number
+}
+
 export type GamePhase = 'playing' | 'scored'
 
 /** 'reveal' only occurs under Depois Acaba (elsewhere the flip is automatic);
@@ -134,6 +144,8 @@ export interface GameSnapshot {
   currentEvent: EventId | null
   /** Blocking event phase before normal turns start (or null). */
   pending: Pending | null
+  /** Pratos already won, in claim order (race: first to complete keeps it). */
+  pratoClaims: PratoClaim[]
   /** As Sobras de Ontem: cards contributed this round; seeds next round. */
   sobras: Card[]
   /** Cards removed from play (Tá Pegando Fogo, Não Alimente). */
@@ -152,6 +164,7 @@ export type LogAction =
   | 'presenteou'
   | 'trocou'
   | 'sobras'
+  | 'prato'
 
 export interface LogEntry {
   round: number

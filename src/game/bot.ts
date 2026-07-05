@@ -51,11 +51,20 @@ function reqCopies(req: PratoReq): number {
  * the buffet nearly guarantees its factor; copies visibly gone (discard)
  * shrink it; a dead piece kills the prato's term.
  */
+/** Names already claimed in the race — dead for pursuit AND for hand value
+ * (a rival's claim never pays; an own claim is banked, so it is a constant
+ * that only muddies the deltas). */
+function claimedNames(snap: GameSnapshot): Set<string> {
+  return new Set((snap.pratoClaims ?? []).map((c) => c.name))
+}
+
 function pratoPotential(snap: GameSnapshot, hand: Card[]): number {
   const picksLeft = CONFIG.handSize - hand.length
   if (picksLeft <= 0) return 0
+  const claimed = claimedNames(snap)
   let sum = 0
   for (const p of CONFIG.pratos) {
+    if (claimed.has(p.name)) continue
     const missing = p.reqs.filter(
       (r) => !hand.some((c) => matchesPratoReq(c, r))
     )
@@ -80,9 +89,13 @@ function pratoPotential(snap: GameSnapshot, hand: Card[]): number {
   return sum
 }
 
-/** The hand value the bot optimizes: realized points + pursuit potential. */
+/** The hand value the bot optimizes: realized points + pursuit potential.
+ * Claimed pratos are excluded from scoreHand — completing a recipe someone
+ * already claimed is worth nothing. */
 function valueOf(snap: GameSnapshot, hand: Card[]): number {
-  return scoreHand(hand).subtotal + pratoPotential(snap, hand)
+  return (
+    scoreHand(hand, claimedNames(snap)).subtotal + pratoPotential(snap, hand)
+  )
 }
 
 /** Points gained by adding a card (bebida gets a placement-race proxy). */

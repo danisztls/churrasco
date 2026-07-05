@@ -4,6 +4,7 @@ import type {
   HandScore,
   PlayerScore,
   PlayerSeat,
+  PratoClaim,
   PratoReq
 } from './types'
 
@@ -28,8 +29,15 @@ export function matchesPratoReq(card: Card, req: PratoReq): boolean {
  * acquired after it that isn't already paired with an earlier pao (wasabi
  * semantics: one pao doubles one corte, no retroaction, no stacking).
  * Linguiça is not a corte and is never doubled.
+ *
+ * Pratos here mean "recipe satisfied by this hand" — the potential view.
+ * Under race rules the REAL prato points come from claims (see scoreSeat);
+ * `excludePratos` lets callers drop names already claimed (or all of them).
  */
-export function scoreHand(hand: Card[]): HandScore {
+export function scoreHand(
+  hand: Card[],
+  excludePratos?: ReadonlySet<string>
+): HandScore {
   let carne = 0
   let pao = 0
   let unboundPaes = 0
@@ -75,6 +83,7 @@ export function scoreHand(hand: Card[]): HandScore {
   const acomp = aCurve[Math.min(acompTypes.size, aCurve.length - 1)]
 
   const pratos = CONFIG.pratos
+    .filter((p) => !excludePratos?.has(p.name))
     .filter((p) =>
       p.reqs.every((req) => hand.some((c) => matchesPratoReq(c, req)))
     )
@@ -179,8 +188,37 @@ export function bebidaPlacements(counts: number[]): number[] {
   return result
 }
 
-export function scoreGame(seats: PlayerSeat[]): PlayerScore[] {
-  const handScores = seats.map((s) => scoreHand(s.hand))
+const ALL_PRATO_NAMES: ReadonlySet<string> = new Set(
+  CONFIG.pratos.map((p) => p.name)
+)
+
+/**
+ * Hand score under race rules: prato points come from the seat's CLAIMS
+ * (first to complete keeps it, even if the hand later loses a piece), never
+ * from current hand contents.
+ */
+export function scoreSeat(seat: PlayerSeat, claims: PratoClaim[]): HandScore {
+  const base = scoreHand(seat.hand, ALL_PRATO_NAMES)
+  const pratos = claims
+    .filter((c) => c.seat === seat.id)
+    .map((c) => ({
+      name: c.name,
+      bonus: CONFIG.pratos.find((p) => p.name === c.name)?.bonus ?? 0
+    }))
+  const pratosTotal = pratos.reduce((sum, p) => sum + p.bonus, 0)
+  return {
+    ...base,
+    pratos,
+    pratosTotal,
+    subtotal: base.subtotal + pratosTotal
+  }
+}
+
+export function scoreGame(
+  seats: PlayerSeat[],
+  claims: PratoClaim[]
+): PlayerScore[] {
+  const handScores = seats.map((s) => scoreSeat(s, claims))
   const bebidaCounts = seats.map(
     (s) => s.hand.filter((c) => c.kind === 'bebida').length
   )

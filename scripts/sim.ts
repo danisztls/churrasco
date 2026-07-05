@@ -115,7 +115,10 @@ function playGame(
   }
   if (snap.phase !== 'scored')
     throw new Error(`game did not finish (seed ${seed})`)
-  return { totals: scoreGame(snap.seats).map((s) => s.total), startSeat }
+  return {
+    totals: scoreGame(snap.seats, snap.pratoClaims).map((s) => s.total),
+    startSeat
+  }
 }
 
 /** Fractional wins (ties split). */

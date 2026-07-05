@@ -157,6 +157,46 @@ describe('anti-stall rule', () => {
   })
 })
 
+describe('prato race', () => {
+  it('the take that completes a recipe claims the prato and logs it', () => {
+    const snap = newGame(PLAYERS, 42, NO_EVENTS)
+    const seat = snap.seats[snap.turnSeat]
+    seat.hand.push({ id: 900, kind: 'carne', corte: 'costela' })
+    snap.buffet[0].card = { id: 901, kind: 'acomp', acomp: 'mandioca' }
+    const next = applyMove(snap, seat.id, { type: 'take', slot: 0 })
+    expect(next.pratoClaims).toEqual([
+      { name: 'Vaca Atolada', seat: seat.id, round: 1 }
+    ])
+    expect(
+      next.log.some((e) => e.action === 'prato' && e.card === 'Vaca Atolada')
+    ).toBe(true)
+  })
+
+  it('completing a recipe someone already claimed does NOT re-claim', () => {
+    const snap = newGame(PLAYERS, 42, NO_EVENTS)
+    const seat = snap.seats[snap.turnSeat]
+    seat.hand.push({ id: 900, kind: 'carne', corte: 'costela' })
+    snap.buffet[0].card = { id: 901, kind: 'acomp', acomp: 'mandioca' }
+    snap.pratoClaims.push({ name: 'Vaca Atolada', seat: 'other', round: 1 })
+    const next = applyMove(snap, seat.id, { type: 'take', slot: 0 })
+    expect(next.pratoClaims).toEqual([
+      { name: 'Vaca Atolada', seat: 'other', round: 1 }
+    ])
+  })
+
+  it('an abacaxi swap (free action) can also win the race', () => {
+    const snap = newGame(PLAYERS, 42, NO_EVENTS)
+    const seat = snap.seats[snap.turnSeat]
+    seat.hand.push({ id: 900, kind: 'abacaxi' })
+    seat.hand.push({ id: 901, kind: 'carne', corte: 'costela' })
+    snap.buffet[0].card = { id: 902, kind: 'acomp', acomp: 'mandioca' }
+    const next = applyMove(snap, seat.id, { type: 'abacaxi', slot: 0 })
+    expect(next.pratoClaims.map((c) => c.name)).toEqual(['Vaca Atolada'])
+    // Still this player's turn — the claim did not consume it.
+    expect(next.seats[next.turnSeat].id).toBe(seat.id)
+  })
+})
+
 describe('carryover', () => {
   it('leaves N leftovers, ALL face-up (sobras públicas), opening the round', () => {
     let snap = newGame(PLAYERS, 7, NO_EVENTS)

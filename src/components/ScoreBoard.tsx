@@ -6,7 +6,9 @@ import { CardView } from './CardView'
 export function ScoreBoard() {
   const { game, amHost, startGame } = useGameEngine()
   if (!game) return null
-  const scores = [...scoreGame(game.seats)].sort((a, b) => b.total - a.total)
+  const scores = [...scoreGame(game.seats, game.pratoClaims ?? [])].sort(
+    (a, b) => b.total - a.total
+  )
   const top = scores[0]?.total
 
   const downloadCsv = () => {

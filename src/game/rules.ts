@@ -2,6 +2,7 @@ import { CONFIG, DEFAULT_MODIFIERS } from './config'
 import { buildShuffledDeck, mulberry32, shuffle } from './deck'
 import { buildEventDeck, EVENTS } from './events'
 import { cardLabel } from './log'
+import { matchesPratoReq } from './scoring'
 import type {
   Card,
   GameSnapshot,
@@ -32,6 +33,31 @@ function logEntry(
 
 const faceUpCount = (snap: GameSnapshot) =>
   snap.buffet.filter((s) => s.faceUp).length
+
+/**
+ * Prato race: called right after a card LANDS in seatIdx's hand. Any recipe
+ * this hand now satisfies that nobody claimed yet is claimed here, forever —
+ * losing a piece later does not revoke it. Call order at multi-hand moves
+ * (gifts, swaps) decides simultaneous completions; callers pick the order.
+ */
+function claimPratos(snap: GameSnapshot, seatIdx: number): void {
+  snap.pratoClaims ??= [] // snapshots from before the race rule
+  const seat = snap.seats[seatIdx]
+  if (!seat) return
+  for (const p of CONFIG.pratos) {
+    if (snap.pratoClaims.some((c) => c.name === p.name)) continue
+    if (!p.reqs.every((r) => seat.hand.some((c) => matchesPratoReq(c, r))))
+      continue
+    snap.pratoClaims.push({ name: p.name, seat: seat.id, round: snap.round })
+    snap.log.push({
+      round: snap.round,
+      event: snap.currentEvent,
+      seat: seat.name,
+      action: 'prato',
+      card: p.name
+    })
+  }
+}
 
 /**
  * Pure turn machine. applyMove() takes a snapshot + a move and returns a NEW
@@ -72,6 +98,7 @@ export function newGame(
     eventDeck: events ? shuffle(buildEventDeck(), rng) : [],
     currentEvent: null,
     pending: null,
+    pratoClaims: [],
     sobras: [],
     discard: [],
     log: [],
@@ -278,6 +305,7 @@ export function applyMove(
       const [abacaxi] = seat.hand.splice(idx, 1)
       seat.hand.push(slot.card)
       slot.card = abacaxi
+      claimPratos(next, next.turnSeat)
       // Free action: the turn continues — still take or pass afterwards.
       return next
     }
@@ -293,6 +321,7 @@ function takeSlot(snap: GameSnapshot, seat: PlayerSeat, slotIdx: number): void {
     ? snap.seats[(snap.turnSeat + 1) % snap.seats.length]
     : seat
   receiver.hand.push(slot.card)
+  claimPratos(snap, snap.seats.indexOf(receiver))
   seat.tookThisRound = true
   if (snap.modifiers.sobrasGive && seat.hand.length > 0) {
     snap.turnStep = 'give'
@@ -344,6 +373,15 @@ function resolveSimul(snap: GameSnapshot, simul: PendingSimul): void {
     if (simul.kind === 'discard') snap.discard.push(card)
     else snap.seats[(i + 1) % n].hand.push(card)
   })
+  if (simul.kind === 'gift') {
+    // Gifts land "at once": simultaneous completions resolve in table order
+    // from the round's start seat.
+    const receivers = new Set([...given.keys()].map((i) => (i + 1) % n))
+    for (let d = 0; d < n; d++) {
+      const i = (snap.startSeat + d) % n
+      if (receivers.has(i)) claimPratos(snap, i)
+    }
+  }
   snap.pending = null
 }
 
@@ -375,6 +413,9 @@ function applySwap(
   other.hand.push(mine)
   me.hand.push(theirs)
   logEntry(snap, me, 'trocou', mine)
+  // Both hands gained a card; the acting swapper has claim priority.
+  claimPratos(snap, idx)
+  claimPratos(snap, otherIdx)
   swap.queue.shift()
   // Skip queued players left without a legal swap.
   while (swap.queue.length > 0) {

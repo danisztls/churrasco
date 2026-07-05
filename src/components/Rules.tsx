@@ -69,7 +69,13 @@ export function Rules({ onClose }: { onClose: () => void }) {
           </li>
         </ul>
 
-        <h3>Pratos (bônus por receita exata na mão)</h3>
+        <h3>Pratos (corrida: só o 1º a completar leva o bônus)</h3>
+        <p>
+          Junte a receita exata na mão antes dos rivais. O prato é seu para
+          sempre no momento em que a última carta chega — perder uma carta
+          depois (evento) não desfaz. Completar receita que outro já levou não
+          vale nada.
+        </p>
         <ul>
           {CONFIG.pratos.map((p) => (
             <li key={p.name}>

@@ -5,7 +5,7 @@ import {
   bebidaPlacements,
   cardContributions,
   matchesPratoReq,
-  scoreHand
+  scoreSeat
 } from '../game/scoring'
 import type { Card, GameSnapshot } from '../game/types'
 import { useGameEngine } from '../multiplayer/useGameEngine'
@@ -301,7 +301,7 @@ export function Table() {
               }}
             />
             <ScoreStrip game={game} myIdx={myIdx} />
-            <PratosPanel hand={mySeat.hand} />
+            <PratosPanel game={game} hand={mySeat.hand} myId={me.id} />
           </>
         ) : (
           <p className="muted">Você entrou no meio do jogo — assistindo.</p>
@@ -355,26 +355,41 @@ function TurnTimer({ game }: { game: GameSnapshot }) {
   )
 }
 
-/** Every prato (combo) with live status: done, in progress, or untouched. */
-function PratosPanel({ hand }: { hand: Card[] }) {
+/** Every prato (combo) with live race status: mine, taken by a rival, in
+ * progress, or untouched. First to complete claims it for good. */
+function PratosPanel({
+  game,
+  hand,
+  myId
+}: {
+  game: GameSnapshot
+  hand: Card[]
+  myId: string
+}) {
+  const claims = game.pratoClaims ?? []
   return (
     <div className="pratos-panel">
       <div className="hand-header">
-        <span>⭐ Pratos (combos)</span>
+        <span>⭐ Pratos (corrida: o 1º a completar leva)</span>
       </div>
       <ul>
         {CONFIG.pratos.map((p) => {
+          const claim = claims.find((c) => c.name === p.name)
+          const owner = claim
+            ? game.seats.find((s) => s.id === claim.seat)
+            : undefined
           const parts = p.reqs.map((req) => ({
             meta: reqMeta(req),
             ok: hand.some((c) => matchesPratoReq(c, req))
           }))
           const have = parts.filter((x) => x.ok).length
-          const state =
-            have === parts.length
+          const state = claim
+            ? claim.seat === myId
               ? 'prato-done'
-              : have > 0
-                ? 'prato-progress'
-                : 'prato-off'
+              : 'prato-taken'
+            : have > 0
+              ? 'prato-progress'
+              : 'prato-off'
           return (
             <li key={p.name} className={`prato-row ${state}`}>
               <span className="prato-name">{p.name}</span>
@@ -389,8 +404,10 @@ function PratosPanel({ hand }: { hand: Card[] }) {
                 ))}
               </span>
               <span className="prato-status">
-                {have === parts.length
-                  ? `+${p.bonus} ✓`
+                {claim
+                  ? claim.seat === myId
+                    ? `+${p.bonus} ✓`
+                    : `✗ ${owner?.name ?? '?'}`
                   : `${have}/${parts.length} · +${p.bonus}`}
               </span>
             </li>
@@ -404,7 +421,7 @@ function PratosPanel({ hand }: { hand: Card[] }) {
 /** Live score breakdown: category chips + projected bebida placement. */
 function ScoreStrip({ game, myIdx }: { game: GameSnapshot; myIdx: number }) {
   const seat = game.seats[myIdx]
-  const s = scoreHand(seat.hand)
+  const s = scoreSeat(seat, game.pratoClaims ?? [])
   const counts = game.seats.map(
     (x) => x.hand.filter((c) => c.kind === 'bebida').length
   )

@@ -4,7 +4,8 @@ import {
   bebidaPlacements,
   cardContributions,
   scoreGame,
-  scoreHand
+  scoreHand,
+  scoreSeat
 } from './scoring'
 
 let nextId = 0
@@ -76,7 +77,7 @@ describe('reference hands from the design doc (aferição rápida)', () => {
     ])
     const b = seat('b', [bebida('cerveja'), carne('coracao')])
     const c = seat('c', [carne('coxao-duro')])
-    const scores = scoreGame([a, b, c])
+    const scores = scoreGame([a, b, c], [])
     expect(scores[0].bebidaPlacement).toBe(8)
     expect(scores[0].total).toBe(22) // 4 face + 8 + 5 + 4 + 1
     expect(scores[1].bebidaPlacement).toBe(4)
@@ -185,6 +186,38 @@ describe('pratos', () => {
       'Vaca Atolada'
     ])
     expect(s.pratosTotal).toBe(4)
+  })
+})
+
+describe('prato race (claims)', () => {
+  it('scoreHand can exclude prato names (claimed elsewhere)', () => {
+    const hand = [carne('costela'), acomp('mandioca')]
+    expect(scoreHand(hand).pratosTotal).toBe(2)
+    expect(scoreHand(hand, new Set(['Vaca Atolada'])).pratosTotal).toBe(0)
+  })
+
+  it('scoreSeat: only CLAIMS score — a satisfied recipe without the claim is worth 0', () => {
+    const s = seat('a', [carne('costela'), acomp('mandioca')])
+    expect(scoreSeat(s, []).pratosTotal).toBe(0)
+    expect(
+      scoreSeat(s, [{ name: 'Vaca Atolada', seat: 'b', round: 2 }]).pratosTotal
+    ).toBe(0)
+  })
+
+  it('scoreSeat: a claim is permanent — scores even without the recipe in hand', () => {
+    const s = seat('a', [bebida('suco')])
+    const score = scoreSeat(s, [{ name: 'Prato Raiz', seat: 'a', round: 3 }])
+    expect(score.pratos).toEqual([{ name: 'Prato Raiz', bonus: 10 }])
+    expect(score.subtotal).toBe(11) // suco 1 + claim 10
+  })
+
+  it('scoreGame routes each claim to its claimant', () => {
+    const a = seat('a', [carne('costela'), acomp('mandioca')])
+    const b = seat('b', [carne('picanha')])
+    const claims = [{ name: 'Vaca Atolada', seat: 'b', round: 2 }]
+    const scores = scoreGame([a, b], claims)
+    expect(scores[0].pratosTotal).toBe(0)
+    expect(scores[1].pratosTotal).toBe(2)
   })
 })
 

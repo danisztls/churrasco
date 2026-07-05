@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react'
-import { scoreHand } from '../game/scoring'
 import type { GameSnapshot } from '../game/types'
 import { SFX } from './sfx'
 
@@ -30,7 +29,8 @@ export function useSfx(
       phase: game.phase,
       logLen: game.log.length,
       myTurn: game.phase === 'playing' && myTurn,
-      pratos: seat ? scoreHand(seat.hand).pratos.length : 0
+      // Race rules: the jingle marks MY claims, not recipes in hand.
+      pratos: (game.pratoClaims ?? []).filter((c) => c.seat === myId).length
     }
     const p = prev.current
     prev.current = cur

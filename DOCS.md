@@ -242,8 +242,9 @@ Aferição rápida (mãos de 7, caem ~21-24, equilibradas):
 ### Combos (pratos) — proposta
 
 Bônus por montar um **prato específico** (1 corte + 1 acompanhamento + 1 bebida
-exatos). Lista de referência no player-aid; ter as 3 cartas na mão = bônus,
-**somado** ao que cada carta já vale. É a mecânica nascida do tema que diferencia do
+exatos). Lista de referência no player-aid; ser o **primeiro** a ter a receita
+completa na mão = bônus, **somado** ao que cada carta já vale (regra da corrida —
+ver abaixo). É a mecânica nascida do tema que diferencia do
 Sushi Go (combo _entre_ categorias, não set dentro de uma). 1ª passada:
 
 | Prato                    | Corte      | Acompanhamento  | Bebida     | Bônus        |
@@ -275,6 +276,28 @@ que o Prato Raiz — a +3, o EV dos pares atropelava o do Raiz e todo mundo
 perseguia os mesmos combos baratos. Ajuste: pares caem para **+2** e o Raiz sobe
 para **+8 → +10**; com as taxas medidas os EVs ficam ~pareados (par: 2 × ~5,5r ≈
 11r; Raiz: 10r). Os triplos do meio (+4 a +6) já escalonavam bem e não mudam.
+
+**Corrida (playtest digital): só o primeiro a completar leva.** Cada prato
+pontua **uma vez por partida**, para o primeiro jogador que juntar a receita:
+
+- A reivindicação acontece **no instante em que a última carta entra na mão**
+  (compra, troca de abacaxi, presente ou troca de evento) e é **permanente** —
+  perder uma peça depois, por evento, não desfaz (como pegar a carta do prato
+  da mesa: ela já é sua).
+- Completar uma receita que outro já levou **não vale nada**.
+- Completamentos simultâneos (presentes/trocas de evento) resolvem na ordem da
+  mesa a partir de quem abre a rodada; em trocas, quem agiu tem prioridade.
+- Mesa física: as cartas de prato ficam **no centro da mesa**; quem fecha a
+  receita pega a carta na hora. Zero bookkeeping.
+
+Por que: com bônus fixo os pratos eram objetivos solitários — cada um monta o
+seu, sem interação. A corrida cria urgência (pegar a peça AGORA ou arriscar
+esperar), negação (levar a mandioca que o rival precisa vira jogada real) e
+leitura de mesa — e com **mãos abertas + sobras públicas** a corrida é legível:
+dá para VER quem está a uma carta do prato. Ataca diretamente o problema do
+teto de habilidade raso. Custo vigiado: o total de pontos de prato por partida
+cai (cada prato sai no máximo uma vez) e quem começa a rodada ganha uma leve
+vantagem de tempo na corrida — girar o inicial já mitiga.
 
 ### Composição do deck (quantas de cada — 1ª passada)
 
