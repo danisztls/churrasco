@@ -31,12 +31,12 @@ function playTurn(
 const firstTake = (moves: Move[]) => moves.find((m) => m.type === 'take')!
 
 describe('newGame', () => {
-  it('deals M = N+2 buffet with 2 face-up + the auto-flip for the opener', () => {
+  it('deals M = 2N buffet with 2 face-up + the auto-flip for the opener', () => {
     const snap = newGame(PLAYERS, 42, NO_EVENTS)
-    expect(snap.buffet).toHaveLength(5)
+    expect(snap.buffet).toHaveLength(6)
     // faceUpAtStart plus the first player's automatic turn-opening flip.
     expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
-    expect(snap.deck).toHaveLength(68 - 5)
+    expect(snap.deck).toHaveLength(68 - 6)
     expect(snap.round).toBe(1)
     expect(snap.turnSeat).toBe(snap.startSeat)
     expect(snap.turnStep).toBe('act')
@@ -80,7 +80,17 @@ describe('turn flow', () => {
 
   it('the auto-flip opens the first face-down slot, in order', () => {
     let snap = newGame(PLAYERS, 42, NO_EVENTS)
-    // Slots 0-2 are up (2 at deal + the opener's flip); 3-4 still down.
+    // Slots 0-2 are up (2 at deal + the opener's flip); 3-5 still down.
+    expect(snap.buffet.map((s) => s.faceUp)).toEqual([
+      true,
+      true,
+      true,
+      false,
+      false,
+      false
+    ])
+    snap = applyMove(snap, currentId(snap), { type: 'take', slot: 0 })
+    // Next turn flipped the first remaining face-down (old slot 3).
     expect(snap.buffet.map((s) => s.faceUp)).toEqual([
       true,
       true,
@@ -88,9 +98,6 @@ describe('turn flow', () => {
       false,
       false
     ])
-    snap = applyMove(snap, currentId(snap), { type: 'take', slot: 0 })
-    // Next turn flipped the first remaining face-down (old slot 3).
-    expect(snap.buffet.map((s) => s.faceUp)).toEqual([true, true, true, false])
   })
 
   it('pass requeues the player; round ends when everyone took', () => {
@@ -132,7 +139,7 @@ describe('anti-stall rule', () => {
     const moves = legalMoves(snap, seat.id)
     expect(moves.some((m) => m.type === 'pass')).toBe(false)
     const slots = moves.flatMap((m) => (m.type === 'abacaxi' ? [m.slot] : []))
-    expect(slots).toEqual([1, 2, 3, 4])
+    expect(slots).toEqual([1, 2, 3, 4, 5])
     const next = applyMove(snap, seat.id, { type: 'abacaxi', slot: 1 })
     const me = next.seats.find((s) => s.id === seat.id)!
     expect(me.tookThisRound).toBe(false)
@@ -147,13 +154,14 @@ describe('anti-stall rule', () => {
 })
 
 describe('carryover', () => {
-  it('leaves exactly 2 face-up leftovers that open the next round', () => {
+  it('leaves N leftovers (2 up, rest down) that open the next round', () => {
     let snap = newGame(PLAYERS, 7, NO_EVENTS)
     while (snap.round === 1) {
       snap = playTurn(snap, firstTake)
     }
-    expect(snap.buffet).toHaveLength(5)
-    // 2 carryover leftovers + the opener's automatic flip.
+    // M = 2N: flips per round = 2 + N turns, so N-2 stay down; N carry over.
+    expect(snap.buffet).toHaveLength(6)
+    // 2 face-up carryover + the round-2 opener's automatic flip.
     expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
   })
 
@@ -176,7 +184,7 @@ describe('game end', () => {
     expect(snap.phase).toBe('scored')
     expect(snap.round).toBe(7)
     expect(snap.seats.every((s) => s.hand.length === 7)).toBe(true)
-    expect(snap.buffet).toHaveLength(2)
+    expect(snap.buffet).toHaveLength(3) // M - N leftovers at 3 players
   })
 })
 

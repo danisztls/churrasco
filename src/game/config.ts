@@ -25,10 +25,11 @@ export const CONFIG = {
   handSize: 7,
   /**
    * Buffet slots per round as a function of player count (event deltas add on
-   * top). Default M = N + 2. Playtest alternatives: (n) => n * 2 (fartura),
-   * (n) => n + 3 (meio-termo).
+   * top). M = N * 2 since the luck findings (sim showed the core draft, not
+   * events, carries the variance — wider choice adds agency). The doc's
+   * original was (n) => n + 2.
    */
-  buffetSlots: (n: number): number => n + 2,
+  buffetSlots: (n: number): number => n * 2,
   /** Cards already face-up at round start (carryover feeds this from round 2). */
   faceUpAtStart: 2,
   /**

@@ -29,10 +29,10 @@ export function Rules({ onClose }: { onClose: () => void }) {
 
         <h3>Sua vez</h3>
         <p>
-          O buffet tem N+2 cartas. Na sua vez, uma carta fechada vira sozinha;
-          então <strong>pegue</strong> qualquer carta aberta (e saia da rodada)
-          — ou <strong>passe</strong> e espere corte melhor. Só dá para passar
-          enquanto houver carta fechada. As 2 cartas que sobram abrem a rodada
+          O buffet tem 2 cartas por jogador. Na sua vez, uma carta fechada vira
+          sozinha; então <strong>pegue</strong> qualquer carta aberta (e saia da
+          rodada) — ou <strong>passe</strong> e espere corte melhor. Só dá para
+          passar enquanto houver carta fechada. O que sobra abre a rodada
           seguinte.
         </p>
 

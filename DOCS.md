@@ -82,7 +82,7 @@ Descrição base (do conceito original):
 
 ### Turno (resolvido): buffet aberto, estilo rodízio
 
-- Início da rodada: **M = N + 2 cartas na mesa, 2 já viradas para cima** (o buffet);
+- Início da rodada: **M = 2N cartas na mesa, 2 já viradas para cima** (o buffet);
   o resto, virado para baixo.
 - Na sua vez você **revela 1 carta** (vira uma das de baixo) e então:
   - **Pega** qualquer carta revelada (e sai da rodada) — não precisa ser a que
@@ -90,15 +90,14 @@ Descrição base (do conceito original):
   - **Passa** (deixa pra depois): não pega nada, a vez segue.
 - Como começa com 2 reveladas e você revela mais 1, **o buffet nunca está vazio na
   sua decisão**.
-- Fim da rodada (todos compraram): as 2 cartas não compradas **ficam no buffet,
-  viradas para cima, como as 2 reveladas da próxima rodada** — completa-se com N
-  novas viradas para baixo. O rodízio continua: a sobra de hoje é a entrada de
-  amanhã.
+- Fim da rodada (todos compraram): as N cartas não compradas **ficam no buffet
+  como estão** (reveladas ou não) — completa-se com N novas viradas para baixo.
+  O rodízio continua: a sobra de hoje é a entrada de amanhã.
 - Passar = opcionalidade estilo rodízio: aposta que vem corte melhor (e a
   recirculação faz isso pagar — ver carryover), com o risco de um rival levar a joia
   antes de a vez voltar. (Equilíbrio do passar: ver _Questões em aberto_.)
 
-### Abundância (resolvido): M = N + 2
+### Abundância (resolvido): M = 2N
 
 Furo descoberto testando a versão N cartas = N jogadores: **passar vira armadilha
 para quem começa.** Exemplo (3 jogadores, 3 cartas): se A passa, B e C escolhem as
@@ -106,18 +105,21 @@ melhores e A cicla para o fim, comendo a última carta sem escolha — passar fo
 estritamente pior que pegar. Girar o inicial por rodada distribui _quem_ é
 prejudicado, mas não faz passar valer.
 
-Correção confirmada: distribuir **M = N + 2 cartas por rodada** (ajustável — é uma
-alavanca de balanceamento).
+1ª correção: **M = N + 2**. O playtest digital subiu para **M = 2N** (ajustável —
+é uma alavanca em `config.ts`): a simulação mostrou que a variância do jogo mora
+no draft de núcleo, não nos eventos, e com N+2 cada decisão era "a melhor de ~3"
+— pouca agência por turno. Dobrar o buffet alarga a escolha e dá mais espaço de
+plano. Custo vigiado no playtest: sobras acumulam rejeito e os placares inflam.
 
 - Ninguém é forçado a uma única carta — o último ainda escolhe entre várias.
 - Passar vira ganho real de informação: o cardápio afina mas nunca seca.
 
-**Carryover (regra de núcleo):** as M − N (= 2) cartas não compradas ao fim da
-rodada **ficam no buffet, viradas para cima, como as 2 reveladas da próxima rodada**
-(completa-se com N novas viradas para baixo). Nada é desperdiçado; cartas boas que
-ninguém pegou voltam — é o que faz "segurar pelo corte melhor" pagar ao longo do
-jogo (recirculação estilo rodízio). O evento _as sobras de ontem_ amplifica isso
-(jogadores também injetam cartas no monte). Não afeta a contagem de mãos.
+**Carryover (regra de núcleo):** as M − N (= N) cartas não compradas ao fim da
+rodada **ficam no buffet como estão** (completa-se com N novas viradas para
+baixo). Nada é desperdiçado; cartas boas que ninguém pegou voltam — é o que faz
+"segurar pelo corte melhor" pagar ao longo do jogo (recirculação estilo rodízio).
+O evento _as sobras de ontem_ amplifica isso (jogadores também injetam cartas no
+monte). Não afeta a contagem de mãos.
 
 Custo aceito: perde-se o hook "N cartas = N jogadores" — bonito, mas quebrava a
 mecânica assinatura.
@@ -311,8 +313,8 @@ Deck atual (14 tipos, saca ~7-8 por jogo):
   desempate: mais carne). Segundo motivo para disputar bebida, sem premiar álcool
   especificamente.
 - _Esqueceram de mim_ — quem seria o primeiro da rodada vira o último e escolhe uma
-  das cartas que restarem. Com abundância (~3 sobram) é brando — evento de ordem
-  leve; alvo único, mas o primeiro rotaciona.
+  das cartas que restarem. Com abundância (o último ainda escolhe entre várias) é
+  brando — evento de ordem leve; alvo único, mas o primeiro rotaciona.
 - _Depois acaba_ — passar é proibido: na sua vez você vira a carta do topo e é
   obrigado a pegá-la (flip-and-take). Mata a opcionalidade por uma rodada (pura
   urgência).
@@ -320,8 +322,8 @@ Deck atual (14 tipos, saca ~7-8 por jogo):
 **Buffet (tamanho):**
 
 - _Primo Rico_ — buffet com 2 cartas a mais (M+2): fartura, escolha sobrando.
-- _Acabou o carvão_ — buffet com 2 cartas a menos (M = N): escassez, passar fica
-  arriscado e os últimos pegam o que restou. Espelho do Primo Rico.
+- _Acabou o carvão_ — buffet com 2 cartas a menos (2N − 2): escassez relativa,
+  passar fica arriscado. Espelho do Primo Rico.
 
 **Informação:**
 

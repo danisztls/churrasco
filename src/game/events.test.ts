@@ -70,8 +70,8 @@ describe('o rex atacou', () => {
   it('discards the carryover and opens a fresh buffet', () => {
     const snap = gameWithEvent('rex')
     expect(snap.currentEvent).toBe('rex')
-    // Last round's 2 leftovers were eaten by the dog.
-    expect(snap.discard).toHaveLength(2)
+    // Last round's N leftovers (2 up + 1 down at 3p) were eaten by the dog.
+    expect(snap.discard).toHaveLength(3)
     expect(snap.buffet).toHaveLength(CONFIG.buffetSlots(3))
     // Fresh deal: 2 flipped at start + the opener's auto-flip.
     expect(snap.buffet.filter((s) => s.faceUp)).toHaveLength(3)
@@ -283,8 +283,9 @@ describe('as sobras de ontem', () => {
       .filter((s) => !s.faceUp)
       .map((s) => s.card.id)
     expect(snap.sobras).toHaveLength(0)
-    // The 3 pile cards were dealt face-down; the opener's auto-flip opened one.
-    expect(faceDownIds).toHaveLength(2)
+    // The 3 pile cards enter face-down; the opener's flip opens the leftover
+    // face-down carryover first, so all 3 still-down cards are the pile.
+    expect(faceDownIds).toHaveLength(3)
     expect(snap.seats.every((s) => s.hand.length === 1)).toBe(true)
   })
 })
