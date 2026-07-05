@@ -357,6 +357,7 @@ h1 {
 }
 
 .card {
+  --card-accent: var(--accent);
   appearance: none;
   border: none;
   font: inherit;
@@ -373,6 +374,7 @@ h1 {
   gap: 0.4rem;
   text-align: center;
   position: relative;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--card-accent) 22%, transparent);
   transition:
     transform 0.3s cubic-bezier(0.22, 1, 0.36, 1),
     box-shadow 0.3s ease,
@@ -455,15 +457,17 @@ h1 {
 
 .card-clickable {
   cursor: pointer;
-  box-shadow: 0 0 0 2px var(--accent);
+  box-shadow:
+    0 0 0 2px var(--card-accent),
+    0 5px 16px color-mix(in srgb, var(--card-accent) 30%, transparent);
 }
 
 .card-clickable:hover,
 .card-clickable:focus-visible {
   transform: translateY(-6px) scale(1.05);
   box-shadow:
-    0 0 0 3px var(--accent),
-    0 12px 20px rgba(0, 0, 0, 0.5);
+    0 0 0 3px var(--card-accent),
+    0 12px 24px color-mix(in srgb, var(--card-accent) 45%, transparent);
   z-index: 1;
 }
 
@@ -474,7 +478,7 @@ h1 {
 /* The next card to be flipped pulses; the button above does the flipping. */
 .card-back.card-next {
   opacity: 1;
-  box-shadow: 0 0 0 2px var(--accent);
+  box-shadow: 0 0 0 2px var(--card-accent);
   animation:
     card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1),
     pulse 1.8s ease-in-out 0.6s infinite;
@@ -483,17 +487,18 @@ h1 {
 @keyframes pulse {
   0%,
   100% {
-    box-shadow: 0 0 0 2px var(--accent);
+    box-shadow: 0 0 0 2px var(--card-accent);
   }
   50% {
-    box-shadow: 0 0 0 7px color-mix(in srgb, var(--accent) 45%, transparent);
+    box-shadow: 0 0 0 7px
+      color-mix(in srgb, var(--card-accent) 45%, transparent);
   }
 }
 
 .card-selected {
   box-shadow:
     0 0 0 3px #fff,
-    0 0 0 6px var(--accent);
+    0 0 0 6px var(--card-accent);
 }
 
 .card-emoji {
@@ -513,26 +518,32 @@ h1 {
 }
 
 .card-carne {
+  --card-accent: var(--carne);
   border-top-color: var(--carne);
   background: #fee2e2;
 }
 .card-linguica {
+  --card-accent: var(--linguica);
   border-top-color: var(--linguica);
   background: #ffedd5;
 }
 .card-pao {
+  --card-accent: var(--pao);
   border-top-color: var(--pao);
   background: #fef9c3;
 }
 .card-bebida {
+  --card-accent: var(--bebida);
   border-top-color: var(--bebida);
   background: #e0f2fe;
 }
 .card-acomp {
+  --card-accent: var(--acomp);
   border-top-color: var(--acomp);
   background: #dcfce7;
 }
 .card-abacaxi {
+  --card-accent: var(--abacaxi);
   border-top-color: var(--abacaxi);
   background: #fef3c7;
 }
