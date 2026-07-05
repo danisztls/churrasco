@@ -120,6 +120,9 @@ export interface PendingSimul {
 export interface PendingSwap {
   kind: 'swap'
   queue: string[]
+  /** Seat ids already picked as a target. Each seat may be chosen at most once
+   * per album, so no single player gets ganged up on (raided repeatedly). */
+  chosen: string[]
 }
 
 export type Pending = PendingSimul | PendingSwap

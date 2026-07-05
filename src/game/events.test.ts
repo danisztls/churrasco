@@ -236,13 +236,44 @@ describe('álbum da copa', () => {
     expect(snap.seats[headIdx].hand.map((c) => c.id)).toEqual([otherCard])
     expect(snap.seats[otherIdx].hand.map((c) => c.id)).toEqual([myCard])
 
-    // Remaining two players swap; then the round starts normally.
-    for (let i = 0; i < 2; i++) {
-      const id = (snap.pending as { queue: string[] }).queue[0]
-      snap = applyMove(snap, id, legalMoves(snap, id)[0])
+    // Drain the rest of the album, recording who each actor targets. Cards are
+    // conserved (each swap trades 1-for-1) and the phase ends cleanly.
+    const targets = [move.target]
+    while (snap.pending?.kind === 'swap') {
+      const id = snap.pending.queue[0]
+      const mv = legalMoves(snap, id).find(
+        (m): m is Move & { type: 'event-swap' } => m.type === 'event-swap'
+      )!
+      targets.push(mv.target)
+      snap = applyMove(snap, id, mv)
     }
     expect(snap.pending).toBeNull()
     expect(snap.seats.every((s) => s.hand.length === 1)).toBe(true)
+    // Nobody is chosen twice — an actor with no un-chosen target is skipped.
+    expect(new Set(targets).size).toBe(targets.length)
+  })
+
+  it('never targets the same player twice, even with many seats', () => {
+    const players = ['a', 'b', 'c', 'd', 'e'].map((id) => ({ id, name: id }))
+    const fresh = newGame(players, 7, { events: false })
+    fresh.eventDeck = ['album-copa']
+    let snap = playUntil(fresh, (s) => s.round === 2)
+    expect(snap.pending?.kind).toBe('swap')
+
+    const targets: string[] = []
+    while (snap.pending?.kind === 'swap') {
+      const id = snap.pending.queue[0]
+      const mv = legalMoves(snap, id).find(
+        (m): m is Move & { type: 'event-swap' } => m.type === 'event-swap'
+      )!
+      // The offered targets never include an already-chosen seat.
+      legalMoves(snap, id).forEach((m) => {
+        if (m.type === 'event-swap') expect(targets).not.toContain(m.target)
+      })
+      targets.push(mv.target)
+      snap = applyMove(snap, id, mv)
+    }
+    expect(new Set(targets).size).toBe(targets.length)
   })
 })
 

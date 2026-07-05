@@ -165,7 +165,7 @@ export const EVENTS: Record<EventId, EventSpec> = {
         const seat = snap.seats[(snap.startSeat + d) % n]
         if (seat.hand.length > 0) queue.push(seat.id)
       }
-      if (queue.length > 0) snap.pending = { kind: 'swap', queue }
+      if (queue.length > 0) snap.pending = { kind: 'swap', queue, chosen: [] }
     }
   },
 

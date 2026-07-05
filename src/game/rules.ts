@@ -188,8 +188,9 @@ export function legalMoves(snap: GameSnapshot, playerId: string): Move[] {
     const hand = snap.seats[idx].hand
     if (snap.pending.kind === 'swap') {
       if (snap.pending.queue[0] !== playerId || hand.length === 0) return []
+      const { chosen } = snap.pending
       const targets = snap.seats.filter(
-        (s, i) => i !== idx && s.hand.length > 0
+        (s, i) => i !== idx && s.hand.length > 0 && !chosen.includes(s.id)
       )
       hand.forEach((_, handIdx) => {
         targets.forEach((t) =>
@@ -401,6 +402,8 @@ function applySwap(
     throw new Error('carta inválida')
   const otherIdx = seatIdx(snap, targetId)
   if (otherIdx === -1 || otherIdx === idx) throw new Error('alvo inválido')
+  if (swap.chosen.includes(targetId))
+    throw new Error('esse jogador já foi escolhido')
   const other = snap.seats[otherIdx]
   if (other.hand.length === 0) throw new Error('jogador sem cartas')
   // Deterministic pick of the returned card (host is the single writer).
@@ -416,14 +419,19 @@ function applySwap(
   // Both hands gained a card; the acting swapper has claim priority.
   claimPratos(snap, idx)
   claimPratos(snap, otherIdx)
+  swap.chosen.push(targetId)
   swap.queue.shift()
-  // Skip queued players left without a legal swap.
+  // Skip queued players with no card, or with no un-chosen target left: each
+  // seat is targetable only once, so late actors can run out of options.
   while (swap.queue.length > 0) {
     const headIdx = seatIdx(snap, swap.queue[0])
     const head = snap.seats[headIdx]
     const can =
       head.hand.length > 0 &&
-      snap.seats.some((s, i) => i !== headIdx && s.hand.length > 0)
+      snap.seats.some(
+        (s, i) =>
+          i !== headIdx && s.hand.length > 0 && !swap.chosen.includes(s.id)
+      )
     if (can) break
     swap.queue.shift()
   }
