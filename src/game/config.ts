@@ -104,17 +104,39 @@ export const CONFIG = {
 
   /**
    * Pratos (combos): having every card of the recipe in hand => bonus, on top
-   * of what each card already scores (non-exclusive: one card may serve
-   * several pratos). The first 5 are the doc's "1ª passada" triples; the last
-   * 3 are digital-playtest additions with varied shapes and no bebida (they
-   * give the orphan acomps an identity without deepening the bebida race).
-   * Rebalance (sim-driven): 2-card pratos fire 5-6x more often than Raiz, so
-   * pairs dropped to +2 and Raiz rose to +10 to bring the EVs to rough parity.
+   * of what each card already scores (non-exclusive: one card may serve several
+   * pratos). Ordered high bonus first — display everywhere follows this array.
+   * Shapes vary: the doc's "1ª passada" triples (carne+acomp+bebida), digital
+   * playtest additions without bebida (an identity for the orphan acomps), and
+   * two full-set combos — Rei do Gado (all 5 cortes) / Sedento (all 4 bebidas),
+   * very committed hands, hence hefty. Rebalance (sim-driven): 2-card pratos
+   * fire 5-6x more often than Raiz, so pairs sit at +2 and Raiz at +10.
    */
   pratos: [
     {
+      name: 'Rei do Gado',
+      reqs: [
+        carne('picanha'),
+        carne('costela'),
+        carne('fraldinha'),
+        carne('coracao'),
+        carne('coxao-duro')
+      ],
+      bonus: 12
+    },
+    {
       name: 'Prato Raiz',
       reqs: [carne('picanha'), acomp('farofa'), bebida('cerveja')],
+      bonus: 10
+    },
+    {
+      name: 'Sedento',
+      reqs: [
+        bebida('cerveja'),
+        bebida('guarana'),
+        bebida('suco'),
+        bebida('caipirinha')
+      ],
       bonus: 10
     },
     {
@@ -133,14 +155,14 @@ export const CONFIG = {
       bonus: 5
     },
     {
-      name: 'Fitness de Mentira',
-      reqs: [carne('coxao-duro'), acomp('salada'), bebida('suco')],
-      bonus: 3
-    },
-    {
       name: 'Espetinho de Boteco',
       reqs: [acomp('queijo-coalho'), linguica, pao],
       bonus: 4
+    },
+    {
+      name: 'Fitness',
+      reqs: [carne('coxao-duro'), acomp('salada'), bebida('suco')],
+      bonus: 3
     },
     {
       name: 'Vaca Atolada',

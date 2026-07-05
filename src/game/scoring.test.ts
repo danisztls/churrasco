@@ -28,8 +28,9 @@ const seat = (id: string, hand: Card[]) => ({
 })
 
 describe('reference hands from the design doc (aferição rápida)', () => {
-  it('carne + pão hand scores 21', () => {
+  it('carne + pão hand: 21 base + Rei do Gado (all 5 cortes) = 33', () => {
     // [pão, picanha, costela, fraldinha, coração, coxão, linguiça]
+    // The 5 distinct cortes also complete Rei do Gado (+12) on top.
     const hand = [
       pao(),
       carne('picanha'),
@@ -43,7 +44,8 @@ describe('reference hands from the design doc (aferição rápida)', () => {
     expect(s.carne).toBe(15)
     expect(s.pao).toBe(5) // picanha doubled: 5 -> 10
     expect(s.linguica).toBe(1)
-    expect(s.subtotal).toBe(21)
+    expect(s.pratos).toEqual([{ name: 'Rei do Gado', bonus: 12 }])
+    expect(s.subtotal).toBe(33) // 15 + 5 + 1 + 12
   })
 
   it('variedade hand scores 24 (5 distinct acomps + picanha + bebida)', () => {
@@ -162,7 +164,7 @@ describe('pratos', () => {
     ])
     expect(s.pratos.map((p) => p.name).sort()).toEqual([
       'Domingo em Família',
-      'Fitness de Mentira'
+      'Fitness'
     ])
     expect(s.pratosTotal).toBe(8)
   })
@@ -186,6 +188,37 @@ describe('pratos', () => {
       'Vaca Atolada'
     ])
     expect(s.pratosTotal).toBe(4)
+  })
+
+  it('rei do gado: all 5 distinct cortes fire +12 (4 is not enough)', () => {
+    const cortes: Card[] = [
+      carne('picanha'),
+      carne('costela'),
+      carne('fraldinha'),
+      carne('coracao'),
+      carne('coxao-duro')
+    ]
+    const s = scoreHand(cortes)
+    expect(s.pratos).toEqual([{ name: 'Rei do Gado', bonus: 12 }])
+    // 5+4+3+2+1 face + 12 combo, no other prato
+    expect(s.subtotal).toBe(27)
+    // one corte short: nothing fires
+    expect(scoreHand(cortes.slice(0, 4)).pratos).toEqual([])
+  })
+
+  it('sedento: all 4 distinct bebidas fire +10 (3 is not enough)', () => {
+    const bebidas: Card[] = [
+      bebida('cerveja'),
+      bebida('guarana'),
+      bebida('suco'),
+      bebida('caipirinha')
+    ]
+    const s = scoreHand(bebidas)
+    expect(s.pratos).toEqual([{ name: 'Sedento', bonus: 10 }])
+    // 4 bebida face + 10 combo (placement is scored separately)
+    expect(s.subtotal).toBe(14)
+    // one bebida short: nothing fires
+    expect(scoreHand(bebidas.slice(0, 3)).pratos).toEqual([])
   })
 })
 
