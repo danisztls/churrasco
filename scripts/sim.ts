@@ -5,16 +5,15 @@
  *   npx tsx scripts/sim.ts [games-per-experiment]
  *
  * Experiments (4 players each):
- *  E1  1 greedy vs 3 random-legal  -> how much exact valuation is worth
- *  E2  1 greedy+ vs 3 greedy       -> how much planning ABOVE greedy is worth
- *  E3  4 greedy, seat effect       -> does the round-1 start seat win more?
- *  E4  4 greedy, events on vs off  -> how much variance the events inject
+ *  E1  1 greedy vs 3 random-legal   -> how much exact valuation is worth
+ *  E2  1 greedy vs 3 legacy-greedy  -> value of the prato-pursuit heuristic
+ *  E3  4 greedy, seat effect        -> does the round-1 start seat win more?
+ *  E4  4 greedy, events on vs off   -> how much variance the events inject
  */
 import { botMove } from '../src/game/bot'
-import { CONFIG } from '../src/game/config'
 import { mulberry32 } from '../src/game/deck'
 import { applyMove, legalMoves, newGame } from '../src/game/rules'
-import { bebidaPlacements, scoreGame, scoreHand } from '../src/game/scoring'
+import { scoreGame, scoreHand } from '../src/game/scoring'
 import type { Card, GameSnapshot, Move } from '../src/game/types'
 
 type Policy = (
@@ -31,13 +30,12 @@ const randomPolicy: Policy = (snap, seatId, rand) => {
 
 const greedy: Policy = botMove
 
-/** Greedy plus two planning upgrades: speculative pão value and the REAL
- * marginal bebida-placement delta (public info) instead of a flat +1.5. */
-const greedyPlus: Policy = (snap, seatId, rand) => {
+/** The pre-pursuit greedy: raw scoreHand delta + flat bebida proxy. Kept as
+ * the baseline to measure what the prato-pursuit heuristic is worth. */
+const greedyLegacy: Policy = (snap, seatId, rand) => {
   const moves = legalMoves(snap, seatId)
   if (moves.length === 0) return null
-  const seatIdx = snap.seats.findIndex((s) => s.id === seatId)
-  const seat = snap.seats[seatIdx]
+  const seat = snap.seats.find((s) => s.id === seatId)!
 
   const reveals = moves.filter((m) => m.type === 'reveal')
   if (reveals.length > 0) return reveals[Math.floor(rand() * reveals.length)]
@@ -64,22 +62,7 @@ const greedyPlus: Policy = (snap, seatId, rand) => {
   const gain = (card: Card): number => {
     const base =
       scoreHand([...seat.hand, card]).subtotal - scoreHand(seat.hand).subtotal
-    if (card.kind === 'bebida') {
-      const counts = snap.seats.map(
-        (s) => s.hand.filter((c) => c.kind === 'bebida').length
-      )
-      const before = bebidaPlacements(counts)[seatIdx]
-      counts[seatIdx] += 1
-      const after = bebidaPlacements(counts)[seatIdx]
-      // Discounted: the race can still move before scoring.
-      return base + Math.max(0, after - before) * 0.8
-    }
-    if (card.kind === 'pao-de-alho') {
-      // Speculative doubling while there are picks left to land a corte.
-      const picksLeft = CONFIG.handSize - seat.hand.length
-      return base + (picksLeft >= 3 ? 2.5 : picksLeft === 2 ? 1.2 : 0)
-    }
-    return base
+    return card.kind === 'bebida' ? base + 1.5 : base
   }
 
   const takes = moves.filter(
@@ -178,7 +161,7 @@ function std(xs: number[]): number {
   )
 }
 
-// E2: 1 greedy+ vs 3 greedy
+// E2: 1 greedy (with prato pursuit) vs 3 legacy greedy
 {
   let wins = 0
   const pScores: number[] = []
@@ -186,17 +169,17 @@ function std(xs: number[]): number {
   for (let g = 0; g < GAMES; g++) {
     const hero = g % N_PLAYERS
     const policies = Array.from({ length: N_PLAYERS }, (_, i) =>
-      i === hero ? greedyPlus : greedy
+      i === hero ? greedy : greedyLegacy
     )
     const { totals } = playGame(policies, 2000 + g, true)
     wins += winShares(totals)[hero]
     pScores.push(totals[hero])
     totals.forEach((t, i) => i !== hero && gScores.push(t))
   }
-  console.log(`E2  greedy+ vs 3 greedy  (${GAMES} games, parity 25%)`)
-  console.log(`    greedy+ win rate: ${pct(wins / GAMES)}`)
+  console.log(`E2  pursuit vs 3 legacy  (${GAMES} games, parity 25%)`)
+  console.log(`    pursuit win rate: ${pct(wins / GAMES)}`)
   console.log(
-    `    avg score  greedy+ ${mean(pScores).toFixed(1)}  greedy ${mean(gScores).toFixed(1)}\n`
+    `    avg score  pursuit ${mean(pScores).toFixed(1)}  legacy ${mean(gScores).toFixed(1)}\n`
   )
 }
 
