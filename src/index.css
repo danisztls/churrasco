@@ -100,11 +100,18 @@ h1 {
 .table {
   display: grid;
   grid-template-columns: 1fr;
+  /* Mobile stacks single-column; the aside sits below the header (which clears
+     the floating FABs) and above the gameplay, so the player list / log lead. */
+  grid-template-areas:
+    'header'
+    'side'
+    'main';
   gap: 1.2rem;
   align-items: start;
 }
 
 .table-main {
+  grid-area: main;
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
@@ -112,6 +119,7 @@ h1 {
 }
 
 .table-side {
+  grid-area: side;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -179,6 +187,10 @@ h1 {
   .screen.table {
     max-width: 1180px;
     grid-template-columns: minmax(0, 1fr) 320px;
+    /* Header back atop the left (main) column; aside spans the right column. */
+    grid-template-areas:
+      'header side'
+      'main   side';
   }
 
   .table-side {
@@ -202,6 +214,7 @@ h1 {
 }
 
 .table-header {
+  grid-area: header;
   display: flex;
   justify-content: space-between;
   align-items: center;

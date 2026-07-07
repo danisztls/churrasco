@@ -117,12 +117,11 @@ export function Table() {
 
   return (
     <div className="screen table">
+      <header className="table-header">
+        <span>Rodada {game.round}</span>
+        <span className="muted">monte: {game.deck.length}</span>
+      </header>
       <div className="table-main">
-        <header className="table-header">
-          <span>Rodada {game.round}</span>
-          <span className="muted">monte: {game.deck.length}</span>
-        </header>
-
         {ev && (
           <div className="event-banner">
             <span className="event-emoji">{ev.emoji}</span>
@@ -271,9 +270,7 @@ export function Table() {
             ))}
         </div>
 
-        {mySeat && (
-          <PratosPanel game={game} hand={mySeat.hand} myId={me.id} />
-        )}
+        {mySeat && <PratosPanel game={game} hand={mySeat.hand} myId={me.id} />}
       </div>
       <aside className="table-side">
         <ul className="players-strip">
