@@ -10,7 +10,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\"",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && pnpx wrangler pages deploy dist --project-name churrasco"
   },
   "dependencies": {
     "playroomkit": "^0.0.96",
