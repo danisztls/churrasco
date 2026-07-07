@@ -62,10 +62,10 @@ export function GameLog({ game }: { game: GameSnapshot }) {
   if (game.log.length === 0) return null
   const colorOf = new Map(game.seats.map((s) => [s.name, s.color]))
   return (
-    <aside className="game-log">
-      <div className="hand-header">
+    <details className="game-log collapsible" open>
+      <summary className="hand-header">
         <span>Histórico</span>
-      </div>
+      </summary>
       <ul>
         {[...game.log].reverse().map((e, i) => (
           <li key={game.log.length - i}>
@@ -77,6 +77,6 @@ export function GameLog({ game }: { game: GameSnapshot }) {
           </li>
         ))}
       </ul>
-    </aside>
+    </details>
   )
 }

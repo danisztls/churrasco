@@ -130,16 +130,38 @@ h1 {
   background: var(--panel);
   border-radius: 0.6rem;
   padding: 0.8rem;
-  max-height: 40vh;
-  overflow-y: auto;
   font-size: 0.9rem;
   line-height: 1.4;
 }
 
+/* Reusable disclosure toggle: any <details class="collapsible"> with a
+   <summary> gets an accordion-style +/− marker (used by the log, pratos, and
+   revealed hands). */
+.collapsible > summary {
+  cursor: pointer;
+  align-items: center;
+  list-style: none; /* drop the native disclosure triangle; we draw our own */
+}
+.collapsible > summary::-webkit-details-marker {
+  display: none; /* Safari's marker isn't covered by list-style */
+}
+/* Accordion-style +/− toggle: the glyph itself swaps rather than rotating. */
+.collapsible > summary::after {
+  content: '−'; /* U+2212 minus — the open state */
+  color: var(--muted);
+  font-weight: 700;
+}
+.collapsible:not([open]) > summary::after {
+  content: '+';
+}
+
+/* Scroll lives on the list, not the whole panel, so the summary stays put. */
 .game-log ul {
   list-style: none;
   margin: 0.5rem 0 0;
   padding: 0;
+  max-height: 40vh;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -198,8 +220,26 @@ h1 {
     top: 1rem;
   }
 
-  .game-log {
+  .game-log ul {
     max-height: calc(100vh - 14rem);
+  }
+}
+
+/* Phones: tighten the vertical rhythm. Stacked single-column, the 1.2rem gaps
+   and outer padding add up to a lot of scrolling, so trim them slightly. */
+@media (max-width: 1099.98px) {
+  .screen {
+    padding: 0.9rem 0.9rem 2rem;
+    gap: 0.9rem;
+  }
+
+  .table,
+  .table-main {
+    gap: 0.9rem;
+  }
+
+  .table-side {
+    gap: 0.8rem;
   }
 }
 
@@ -597,6 +637,17 @@ h1 {
 
 .card-small .card-name {
   font-size: 0.8rem;
+}
+
+/* Phones: trim card padding a touch so the buffet and hands take less room.
+   Kept next to the base card rules so it wins the cascade by source order. */
+@media (max-width: 1099.98px) {
+  .card {
+    padding: 0.6rem 0.45rem;
+  }
+  .card-small {
+    padding: 0.4rem 0.3rem;
+  }
 }
 
 /* ---- actions ---- */

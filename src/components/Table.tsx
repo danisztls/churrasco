@@ -258,7 +258,10 @@ export function Table() {
           <p className="muted">Você entrou no meio do jogo — assistindo.</p>
         )}
 
-        <div className="reveal-hands">
+        <details className="reveal-hands collapsible" open>
+          <summary className="hand-header">
+            <span>Mãos reveladas</span>
+          </summary>
           {game.seats
             .filter((s) => s.id !== me.id)
             .map((seat) => (
@@ -268,7 +271,7 @@ export function Table() {
                 title={`${seat.name} (${seat.hand.length}/7)`}
               />
             ))}
-        </div>
+        </details>
 
         {mySeat && <PratosPanel game={game} hand={mySeat.hand} myId={me.id} />}
       </div>
@@ -382,10 +385,10 @@ function PratosPanel({
 }) {
   const claims = game.pratoClaims ?? []
   return (
-    <div className="pratos-panel">
-      <div className="hand-header">
+    <details className="pratos-panel collapsible" open>
+      <summary className="hand-header">
         <span>⭐ Pratos (corrida: o 1º a completar leva)</span>
-      </div>
+      </summary>
       <ul>
         {CONFIG.pratos.map((p) => {
           const claim = claims.find((c) => c.name === p.name)
@@ -428,7 +431,7 @@ function PratosPanel({
           )
         })}
       </ul>
-    </div>
+    </details>
   )
 }
 
