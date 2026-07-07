@@ -119,11 +119,6 @@ export function botMove(
   const moves = legalMoves(snap, seatId)
   if (moves.length === 0) return null
   const seat = snap.seats.find((s) => s.id === seatId)!
-  const pick = <T>(arr: T[]): T => arr[Math.floor(rand() * arr.length)]
-
-  // Only Depois Acaba still offers a reveal move (flip-and-take).
-  const reveals = moves.filter((m) => m.type === 'reveal')
-  if (reveals.length > 0) return pick(reveals)
 
   // Event phases: shed the least valuable card (swap target is arbitrary).
   const handMoves = moves.filter(

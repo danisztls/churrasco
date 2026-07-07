@@ -371,9 +371,9 @@ Deck atual (13 tipos + o neutro, saca ~7-8 por jogo):
 - _Esqueceram de mim_ — quem seria o primeiro da rodada vira o último e escolhe uma
   das cartas que restarem. Com abundância (o último ainda escolhe entre várias) é
   brando — evento de ordem leve; alvo único, mas o primeiro rotaciona.
-- _Depois acaba_ — passar é proibido: na sua vez você vira a carta do topo e é
-  obrigado a pegá-la (flip-and-take). Mata a opcionalidade por uma rodada (pura
-  urgência).
+- _Depois acaba_ — passar é proibido: na sua vez você escolhe uma carta do buffet
+  aberto, mas é obrigado a levar uma. Mata a opção de _esperar_ por uma rodada
+  (pura urgência), sem tirar a escolha de qual carta pegar.
 
 **Buffet (tamanho):**
 
@@ -433,8 +433,8 @@ _Foto pro Story_ saiu no playtest digital: as mãos ficaram **abertas por padrã
 ## Questões em aberto
 
 Regras de precisão resolvidas e embutidas nas seções: pão-de-alho não retroage e
-faz par com um único corte; "depois acaba" = flip-and-take; "esqueceram de mim"
-escolhe uma das que restam; o buffet nunca fica vazio na decisão (revela-se no início da vez);
+faz par com um único corte; "depois acaba" só proíbe passar (a escolha da mesa
+continua); "esqueceram de mim" escolhe uma das que restam; o buffet nunca fica vazio na decisão (revela-se no início da vez);
 gelada sem desempate (empatados recebem integral). Primeiro jogador inicial:
 sorteio (ou o último que fez churrasco).
 

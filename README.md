@@ -47,7 +47,7 @@ em produção o mínimo é 3.
 pesava demais; com a diluição ~1/3 das rodadas sai tranquila. Modificadores
 puros: _Primo Rico_ (+2 no buffet),
 _Acabou o Carvão_ (−2 no buffet), _Churrasqueiro Profissa_ (tudo aberto),
-_Depois Acaba_ (vire-e-leve), _Abre a Boquinha_ (compra vai ao vizinho),
+_Depois Acaba_ (proibido passar), _Abre a Boquinha_ (compra vai ao vizinho),
 _Os Últimos Serão os Primeiros_, _Brinde!_, _Esqueceram de Mim_,
 _O Rex Atacou_ (come as sobras da mesa; buffet novo). Com interação:
 _Não Alimente os Animais_ (todos descartam 1), _Amigo Secreto_ (todos passam
@@ -66,8 +66,8 @@ abertas por padrão).
    bloqueia a troca. Sob _Churrasqueiro Profissa_ a rodada vira um draft
    aberto.
 2. **Virada automática**: revelar a próxima carta fechada não é decisão, então
-   o motor vira sozinho na abertura de cada turno. Exceção: _Depois Acaba_,
-   onde virar É o turno (vire-e-leve) e continua sendo ação do jogador.
+   o motor vira sozinho na abertura de cada turno — inclusive sob _Depois Acaba_,
+   que só tira o direito de passar (a escolha do buffet segue igual).
 3. **Empate na bebida**: empatados dividem o _pool_ das colocações que ocupam
    (piso); empate no último não divide (−2 cada); todos iguais = lavada. A
    punição do último caiu de −4 para −2: swing demais para algo que a ordem

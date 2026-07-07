@@ -104,10 +104,9 @@ export const EVENTS: Record<EventId, EventSpec> = {
   'depois-acaba': {
     name: 'Depois acaba',
     emoji: '⏰',
-    desc: 'Proibido passar: vire uma carta e ela é sua.',
+    desc: 'Proibido passar: escolha uma carta da mesa, mas tem que levar uma.',
     preDeal: (snap) => {
       snap.modifiers.passAllowed = false
-      snap.modifiers.forcedTake = true
     }
   },
 

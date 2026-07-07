@@ -49,18 +49,13 @@ export function CardView({
   )
 }
 
-export function CardBack({ highlight }: { highlight?: boolean }) {
-  const cls = ['card', 'card-back', highlight && 'card-next']
-    .filter(Boolean)
-    .join(' ')
+export function CardBack() {
   return (
     <button
       type="button"
-      className={cls}
+      className="card card-back"
       disabled
-      data-tip={
-        highlight ? 'A próxima carta a virar.' : 'Carta virada para baixo.'
-      }
+      data-tip="Carta virada para baixo."
     >
       <span className="card-emoji">🔥</span>
       <span className="card-name">Churrasco</span>

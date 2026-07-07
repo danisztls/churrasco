@@ -14,16 +14,11 @@ const NO_EVENTS = { events: false }
 
 const currentId = (snap: GameSnapshot) => snap.seats[snap.turnSeat].id
 
-/** Plays the current player's turn: reveal if needed, then use pick(). */
+/** Plays the current player's turn with pick(). */
 function playTurn(
   snap: GameSnapshot,
   pick: (moves: Move[]) => Move
 ): GameSnapshot {
-  if (snap.turnStep === 'reveal') {
-    const reveals = legalMoves(snap, currentId(snap))
-    snap = applyMove(snap, currentId(snap), reveals[0])
-    if (snap.phase !== 'playing' || snap.turnStep === 'reveal') return snap
-  }
   const moves = legalMoves(snap, currentId(snap))
   return applyMove(snap, currentId(snap), pick(moves))
 }
@@ -63,9 +58,6 @@ describe('turn flow', () => {
   it('take removes the slot; the next turn auto-flips another card', () => {
     let snap = newGame(PLAYERS, 42, NO_EVENTS)
     const player = currentId(snap)
-    expect(legalMoves(snap, player).some((m) => m.type === 'reveal')).toBe(
-      false
-    )
     const before = snap.buffet.length
     snap = applyMove(snap, player, firstTake(legalMoves(snap, player)))
     expect(snap.buffet).toHaveLength(before - 1)
@@ -78,7 +70,7 @@ describe('turn flow', () => {
   it('rejects moves from a player out of turn', () => {
     const snap = newGame(PLAYERS, 42, NO_EVENTS)
     const notCurrent = snap.seats.find((_, i) => i !== snap.turnSeat)!.id
-    expect(() => applyMove(snap, notCurrent, { type: 'reveal' })).toThrow()
+    expect(() => applyMove(snap, notCurrent, { type: 'pass' })).toThrow()
     expect(legalMoves(snap, notCurrent)).toHaveLength(0)
   })
 

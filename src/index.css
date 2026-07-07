@@ -514,26 +514,6 @@ h1 {
   transform: translateY(-2px) scale(0.98);
 }
 
-/* The next card to be flipped pulses; the button above does the flipping. */
-.card-back.card-next {
-  opacity: 1;
-  box-shadow: 0 0 0 2px var(--card-accent);
-  animation:
-    card-in 0.45s cubic-bezier(0.22, 1, 0.36, 1),
-    pulse 1.8s ease-in-out 0.6s infinite;
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    box-shadow: 0 0 0 2px var(--card-accent);
-  }
-  50% {
-    box-shadow: 0 0 0 7px
-      color-mix(in srgb, var(--card-accent) 45%, transparent);
-  }
-}
-
 .card-selected {
   box-shadow:
     0 0 0 3px #fff,

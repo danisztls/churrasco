@@ -101,11 +101,13 @@ describe('churrasqueiro profissa', () => {
 })
 
 describe('depois acaba', () => {
-  it('flip-and-take: revealing takes the card and ends your turn', () => {
+  it('lets you choose any face-up card, but forbids passing', () => {
     const snap = gameWithEvent('depois-acaba')
     const actor = snap.seats[snap.turnSeat]
     const moves = legalMoves(snap, actor.id)
-    expect(moves.every((m) => m.type === 'reveal')).toBe(true)
+    // A free draft of the open buffet — no pass (and no abacaxi swap).
+    expect(moves.length).toBeGreaterThan(1)
+    expect(moves.every((m) => m.type === 'take')).toBe(true)
     const next = applyMove(snap, actor.id, moves[0])
     const after = next.seats.find((s) => s.id === actor.id)!
     expect(after.hand.length).toBe(actor.hand.length + 1)
@@ -128,11 +130,8 @@ describe('os últimos serão os primeiros', () => {
     expect(snap.turnSeat).toBe((snap.startSeat + n - 1) % n)
     // First take moves the turn backwards.
     const actor = snap.seats[snap.turnSeat]
-    let s = snap
-    if (s.turnStep === 'reveal')
-      s = applyMove(s, actor.id, legalMoves(s, actor.id)[0])
-    const take = legalMoves(s, actor.id).find((m) => m.type === 'take')!
-    s = applyMove(s, actor.id, take)
+    const take = legalMoves(snap, actor.id).find((m) => m.type === 'take')!
+    const s = applyMove(snap, actor.id, take)
     expect(s.turnSeat).toBe((snap.startSeat + n - 2) % n)
   })
 })
@@ -282,8 +281,6 @@ describe('abre a boquinha', () => {
     let snap = gameWithEvent('abre-boquinha')
     const actorIdx = snap.turnSeat
     const actor = snap.seats[actorIdx]
-    if (snap.turnStep === 'reveal')
-      snap = applyMove(snap, actor.id, legalMoves(snap, actor.id)[0])
     const take = legalMoves(snap, actor.id).find(
       (m): m is Move & { type: 'take' } => m.type === 'take'
     )!
@@ -303,8 +300,6 @@ describe('as sobras de ontem', () => {
   it('take, then give to the pile; the pile seeds the next round', () => {
     let snap = gameWithEvent('sobras')
     const actor = snap.seats[snap.turnSeat]
-    if (snap.turnStep === 'reveal')
-      snap = applyMove(snap, actor.id, legalMoves(snap, actor.id)[0])
     const take = legalMoves(snap, actor.id).find((m) => m.type === 'take')!
     snap = applyMove(snap, actor.id, take)
     expect(snap.turnStep).toBe('give')

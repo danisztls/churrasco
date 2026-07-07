@@ -10,8 +10,7 @@ import type {
   Move,
   PendingSimul,
   PendingSwap,
-  PlayerSeat,
-  TurnStep
+  PlayerSeat
 } from './types'
 
 function logEntry(
@@ -130,14 +129,9 @@ function dealRound(snap: GameSnapshot): void {
 
 /**
  * Turn opener. Flipping the next face-down card carries no decision, so the
- * engine does it automatically — except under Depois Acaba, where the flip IS
- * the turn (what you flip is yours) and stays a player move.
+ * engine does it automatically before the player acts.
  */
 function beginTurn(snap: GameSnapshot): void {
-  if (snap.modifiers.forcedTake) {
-    snap.turnStep = stepFor(snap)
-    return
-  }
   const idx = snap.buffet.findIndex((s) => !s.faceUp)
   if (idx !== -1) snap.buffet[idx].faceUp = true
   snap.turnStep = 'act'
@@ -161,10 +155,6 @@ function startRound(snap: GameSnapshot): void {
     // Nobody takes; the round is skipped (unused by stock events, kept as API).
     endRound(snap)
   }
-}
-
-function stepFor(snap: GameSnapshot): TurnStep {
-  return snap.buffet.some((s) => !s.faceUp) ? 'reveal' : 'act'
 }
 
 function passIsLegal(snap: GameSnapshot): boolean {
@@ -220,10 +210,6 @@ export function legalMoves(snap: GameSnapshot, playerId: string): Move[] {
     )
     return moves
   }
-  if (snap.turnStep === 'reveal') {
-    if (snap.buffet.some((s) => !s.faceUp)) moves.push({ type: 'reveal' })
-    return moves
-  }
   snap.buffet.forEach((s, i) => {
     if (s.faceUp) moves.push({ type: 'take', slot: i })
   })
@@ -266,19 +252,6 @@ export function applyMove(
   if (!seat || seat.id !== playerId) throw new Error('não é a sua vez')
 
   switch (move.type) {
-    case 'reveal': {
-      if (next.turnStep !== 'reveal') throw new Error('nada a revelar agora')
-      const slotIdx = next.buffet.findIndex((s) => !s.faceUp)
-      if (slotIdx === -1) throw new Error('nada para revelar')
-      next.buffet[slotIdx].faceUp = true
-      if (next.modifiers.forcedTake) {
-        // Depois Acaba: what you flip is yours.
-        takeSlot(next, seat, slotIdx)
-        return next
-      }
-      next.turnStep = 'act'
-      return next
-    }
     case 'take': {
       if (next.turnStep !== 'act') throw new Error('revele uma carta primeiro')
       const slot = next.buffet[move.slot]

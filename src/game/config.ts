@@ -204,7 +204,6 @@ export const DEFAULT_MODIFIERS: RoundModifiers = {
   passAllowed: true,
   revealAll: false,
   reversed: false,
-  forcedTake: false,
   takeToNeighbor: false,
   sobrasGive: false,
   lastSeat: null

@@ -33,9 +33,6 @@ const specialist: Policy = (snap, seatId, rand) => {
   if (moves.length === 0) return null
   const seat = snap.seats.find((s) => s.id === seatId)!
 
-  const reveals = moves.filter((m) => m.type === 'reveal')
-  if (reveals.length > 0) return reveals[Math.floor(rand() * reveals.length)]
-
   const handMoves = moves.filter(
     (m) =>
       m.type === 'event-discard' ||

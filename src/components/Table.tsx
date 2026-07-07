@@ -42,8 +42,6 @@ export function Table() {
   const mySeat = myIdx >= 0 ? game.seats[myIdx] : undefined
   const ev = game.currentEvent ? EVENTS[game.currentEvent] : null
 
-  const canReveal = myMoves.some((m) => m.type === 'reveal')
-  const nextRevealIdx = game.buffet.findIndex((s) => !s.faceUp)
   const takeSlots = new Set(
     myMoves.filter((m) => m.type === 'take').map((m) => m.slot)
   )
@@ -95,11 +93,10 @@ export function Table() {
         : `${waitingNames[0] ?? '...'} está trocando figurinha...`
   } else if (myTurn && game.turnStep === 'give') {
     banner = 'Escolha 1 carta da mão para o monte das sobras.'
-  } else if (myTurn && game.turnStep === 'reveal') {
-    // Only Depois Acaba keeps the flip as a player move.
-    banner = 'Vire a próxima carta — ela é sua!'
   } else if (myTurn) {
-    banner = 'Pegue uma carta do buffet — ou passe.'
+    banner = canPass
+      ? 'Pegue uma carta do buffet — ou passe.'
+      : 'Pegue uma carta do buffet.'
   } else {
     banner = `Vez de ${turnSeat.name}`
   }
@@ -146,15 +143,6 @@ export function Table() {
         <TurnTimer game={game} />
 
         <div className="action-bar">
-          {canReveal && (
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => dispatch({ type: 'reveal' })}
-            >
-              Virar — a carta é sua!
-            </button>
-          )}
           {inActStep &&
             selectedSlot !== null &&
             takeSlots.has(selectedSlot) && (
@@ -249,10 +237,7 @@ export function Table() {
                 }
               />
             ) : (
-              <CardBack
-                key={slot.card.id}
-                highlight={canReveal && i === nextRevealIdx}
-              />
+              <CardBack key={slot.card.id} />
             )
           )}
         </div>

@@ -81,8 +81,6 @@ export interface RoundModifiers {
   revealAll: boolean
   /** Os Últimos Serão os Primeiros: reversed turn order this round. */
   reversed: boolean
-  /** Depois Acaba: revealing a card takes it immediately (flip-and-take). */
-  forcedTake: boolean
   /** Abre a Boquinha: the card you take goes to the next seat's hand. */
   takeToNeighbor: boolean
   /** As Sobras de Ontem: after taking, put 1 card from hand on the pile. */
@@ -103,9 +101,9 @@ export interface PratoClaim {
 
 export type GamePhase = 'playing' | 'scored'
 
-/** 'reveal' only occurs under Depois Acaba (elsewhere the flip is automatic);
+/** The buffet flip is automatic, so an ordinary take turn is just 'act';
  * 'give' is the post-take step under As Sobras de Ontem. */
-export type TurnStep = 'reveal' | 'act' | 'give'
+export type TurnStep = 'act' | 'give'
 
 /** Simultaneous pick-from-hand phase (Não Alimente / Amigo Secreto). */
 export interface PendingSimul {
@@ -182,8 +180,6 @@ export interface LogEntry {
 }
 
 export type Move =
-  /** Flip the next face-down buffet card (fixed order — no choice). */
-  | { type: 'reveal' }
   | { type: 'take'; slot: number }
   | { type: 'pass' }
   /** Free action: swap a hand abacaxi with the face-up card at `slot`. */
