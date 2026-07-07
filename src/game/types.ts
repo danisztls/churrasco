@@ -155,6 +155,8 @@ export interface GameSnapshot {
   log: LogEntry[]
   /** RNG seed the deck was shuffled with — for reproducing a game. */
   seed: number
+  /** Host-chosen seconds before the table auto-plays for an idle player. */
+  turnTimeoutSec: number
 }
 
 export type LogAction =

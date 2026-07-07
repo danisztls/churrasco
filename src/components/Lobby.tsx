@@ -1,6 +1,6 @@
 import { getRoomCode, useMultiplayerState } from 'playroomkit'
 import { BOT_SEATS } from '../game/bot'
-import { CONFIG } from '../game/config'
+import { CONFIG, TURN_TIMEOUT_OPTIONS } from '../game/config'
 import { useGameEngine } from '../multiplayer/useGameEngine'
 
 const MIN_PLAYERS = import.meta.env.DEV ? 2 : CONFIG.minPlayers
@@ -8,6 +8,10 @@ const MIN_PLAYERS = import.meta.env.DEV ? 2 : CONFIG.minPlayers
 export function Lobby() {
   const { players, amHost, startGame } = useGameEngine()
   const [bots, setBots] = useMultiplayerState('bots', 0)
+  const [turnTimeoutSec, setTurnTimeoutSec] = useMultiplayerState(
+    'turnTimeoutSec',
+    CONFIG.turnTimeoutSec
+  )
   const count = players.length + bots
   const ready = count >= MIN_PLAYERS && count <= CONFIG.maxPlayers
   return (
@@ -55,6 +59,24 @@ export function Lobby() {
           >
             +
           </button>
+        </div>
+      )}
+      {amHost && (
+        <div className="lobby-timeout">
+          <span className="muted">Tempo por jogada</span>
+          <div className="lobby-timeout-opts">
+            {TURN_TIMEOUT_OPTIONS.map((opt) => (
+              <button
+                key={opt}
+                type="button"
+                className="btn"
+                aria-pressed={turnTimeoutSec === opt}
+                onClick={() => setTurnTimeoutSec(opt, true)}
+              >
+                {opt}s
+              </button>
+            ))}
+          </div>
         </div>
       )}
       {amHost ? (

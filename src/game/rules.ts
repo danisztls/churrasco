@@ -71,7 +71,7 @@ function claimPratos(snap: GameSnapshot, seatIdx: number): void {
 export function newGame(
   players: { id: string; name: string; color?: string }[],
   seed: number,
-  opts: { events?: boolean } = {}
+  opts: { events?: boolean; turnTimeoutSec?: number } = {}
 ): GameSnapshot {
   if (players.length < 2 || players.length > CONFIG.maxPlayers)
     throw new Error(`newGame: ${players.length} jogadores fora do limite`)
@@ -101,7 +101,8 @@ export function newGame(
     sobras: [],
     discard: [],
     log: [],
-    seed
+    seed,
+    turnTimeoutSec: opts.turnTimeoutSec ?? CONFIG.turnTimeoutSec
   }
   dealRound(snap)
   return snap

@@ -52,6 +52,15 @@ describe('newGame', () => {
     )
     expect(snap.currentEvent).toBeNull() // round 1 has no event
   })
+
+  it('carries the host turn timeout, defaulting to CONFIG', () => {
+    expect(newGame(PLAYERS, 1, NO_EVENTS).turnTimeoutSec).toBe(
+      CONFIG.turnTimeoutSec
+    )
+    expect(
+      newGame(PLAYERS, 1, { events: false, turnTimeoutSec: 15 }).turnTimeoutSec
+    ).toBe(15)
+  })
 })
 
 describe('turn flow', () => {

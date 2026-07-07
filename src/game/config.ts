@@ -50,7 +50,11 @@ export const CONFIG = {
    * event every round.
    */
   neutralEventCopies: 6,
-  /** Seconds a connected player gets before the table plays for them. */
+  /**
+   * Default seconds a connected player gets before the table plays for them.
+   * The host can override this per game in the lobby (TURN_TIMEOUT_OPTIONS);
+   * the chosen value rides along in the snapshot, so this is only the fallback.
+   */
   turnTimeoutSec: 30,
 
   /** Face value per corte (pirâmide invertida: raro = alto). */
@@ -180,6 +184,9 @@ export const CONFIG = {
     }
   ] as PratoSpec[]
 }
+
+/** Turn-timeout choices the host can pick in the lobby (seconds). */
+export const TURN_TIMEOUT_OPTIONS = [15, 30, 60] as const
 
 export const ACOMP_TYPES: Acomp[] = [
   'vinagrete',

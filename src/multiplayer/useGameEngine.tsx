@@ -77,6 +77,8 @@ export function GameEngineProvider({
   const startGame = useCallback(() => {
     if (!isHost()) return
     const botCount = (getState('bots') as number) || 0
+    const turnTimeoutSec =
+      (getState('turnTimeoutSec') as number) || CONFIG.turnTimeoutSec
     const seats = [
       ...players.map((p) => ({
         id: p.id,
@@ -85,7 +87,7 @@ export function GameEngineProvider({
       })),
       ...BOT_SEATS.slice(0, botCount)
     ]
-    setGame(newGame(seats, Date.now() >>> 0), true)
+    setGame(newGame(seats, Date.now() >>> 0, { turnTimeoutSec }), true)
   }, [players, setGame])
 
   // Host auto-pilot: bot seats and disconnected players get their moves
@@ -103,7 +105,7 @@ export function GameEngineProvider({
     )
     const timedOut = unattended.length === 0
     const delay = timedOut
-      ? CONFIG.turnTimeoutSec * 1000
+      ? (game.turnTimeoutSec ?? CONFIG.turnTimeoutSec) * 1000
       : unattended.some((s) => s.id.startsWith('bot-'))
         ? 900
         : 1500

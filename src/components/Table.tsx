@@ -345,7 +345,7 @@ export function Table() {
  * re-arms both, so the countdown mirrors when the table will auto-play.
  * Rendered as a standalone progress bar for visibility. */
 function TurnTimer({ game }: { game: GameSnapshot }) {
-  const totalMs = CONFIG.turnTimeoutSec * 1000
+  const totalMs = (game.turnTimeoutSec ?? CONFIG.turnTimeoutSec) * 1000
   const [leftMs, setLeftMs] = useState(totalMs)
   useEffect(() => {
     setLeftMs(totalMs)
